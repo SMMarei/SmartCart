@@ -1,36 +1,37 @@
 # FWE-WS-24-25-772434
 
-## Projektbeschreibung
+# Projektbeschreibung
 Die Einkaufslisten-App unterstützt die Nutzer bei der Erstellung und Verwaltung verschiedener Einkaufslisten und 
 ermöglicht es, den Fortschritt der Einkäufe zu verfolgen. Die App besteht aus einem Backend (Aufgabe 1) und 
 weiteren Funktionen, die später hinzugefügt werden (Aufgabe 2). Das Ziel ist eine intuitive und nützliche Lösung 
 für die Organisation und Optimierung von Einkäufen.
 
-## Aufgabe 1 Backend:
+## Aufgabe 1 Backend: Einkaufslisten-App
 
-## 1. Allgemein
 In der ersten Hausaufgabe liegt der Fokus auf dem Backend der App, das mit Node.js und TypeScript entwickelt werden soll.
 Als Webserver wird Express genutzt. Die Daten sind in einer PostgreSQL Datenbank gespeichert.
 
-## 2. Features & Funktionalitäten
+## Features & Funktionalitäten
 - **Einkaufslisten hinzufügen**: Nutzer können neue Einkaufslisten mit einem Namen und einer Beschreibung hinzufügen.
 - **Einkaufslisten anzeigen**: Nutzer können aller hinzugefügten Einkaufslisten angezeigt bekommen.
 - **Einkaufslisten bearbeiten**: Nutzer können neue oder schon existierende Artikel zu Einkaufslisten hinzufügen, 
 - auch die bestehenden Artikel von Einkaufslisten löschen.
 - **Einkaufslisten löschen**: Nutzer können Einkaufslisten nach ihrer Namen entfernen.
-- **Einkäufe hinzufügen**: Nutzer können neue Einkäufe mit einem Namen, einer Beschreibung und einem Foto hinzufügen. 
-- **Einkäufe anzeigen**: Nutzer können eine Liste aller hinzugefügten Einkäufe anzeigen. 
-- **Einkäufe bearbeiten**: Nutzer können Name oder Beschreibung zu bestehenden Einkäufen bearbeiten.
-- **Einkäufe löschen**: Nutzer können Einkäufe entfernen. 
-- **Einkäufe zu einer Einkaufsliste hinzufügen**: Nutzer können bestehende Einkäufe zu einer Einkaufsliste hinzufügen. 
-- **Einkäufe von einer Einkaufsliste entfernen**: Nutzer können bereits vorhandene Einkäufe von einer Einkaufsliste entfernen. 
+- Einkaufslisten suchen: Nutzer können nach Einkaufslisten basierend auf ihrem Namen oder ihrer Beschreibung suchen.
+- **Artikel erstellen**: Nutzer können neue Einkäufe mit einem Namen, einer Beschreibung und einem Foto hinzufügen. 
+- **Artikel anzeigen**: Nutzer können eine Liste aller hinzugefügten Einkäufe anzeigen. 
+- **Artikel bearbeiten**: Nutzer können Name oder Beschreibung zu bestehenden Einkäufen bearbeiten.
+- **Artikel löschen**: Nutzer können Einkäufe entfernen. 
+- **Artikel zu einer Einkaufsliste hinzufügen**: Nutzer können bestehende Einkäufe zu einer Einkaufsliste hinzufügen. 
+- **Artikel von einer Einkaufsliste entfernen**: Nutzer können bereits vorhandene Einkäufe von einer Einkaufsliste entfernen.
+- **Artikel suchen**: Nutzer können nach Einkäufen basierend auf ihrem Namen oder ihrer Beschreibung suchen.
 
 ### Spezielle Funktionen (Freestyle Tasks):
 - **Top-Einkäufe**: Beliebte Einkäufe, sortiert nach Menge.
 - **Sortierung nach Aktualisierungsdatum**: Einkaufslisten können nach dem letzten Änderungsdatum sortiert werden.
 - **Favoriten-Status**: Einkäufe können als Favoriten markiert und gefiltert werden.
 
-## 3. Routenstruktur
+##  Routenstruktur
     Backend:
     - `GET /shoppingLists/GetAllShoppingLists`: Ruft eine Liste aller Einkaufslisten ab.
     - `POST /shoppingLists/CreateShoppingList`: Erstellt eine neue Einkaufsliste.
@@ -53,7 +54,7 @@ Als Webserver wird Express genutzt. Die Daten sind in einer PostgreSQL Datenbank
     - 'GET /items/GetAllItems': Ruft eine Liste aller Artikel ab.
     - `DELETE /items/DeleteItem/:itemName`: Löscht einen bestimmten Artikel.
  
-## 4. Aufsetzen der Applikation
+##  Aufsetzen der Applikation
 ### Backend
     .env Inhalt für die Datenbankverbindung (Mikro-ORM):
         DATABASE_URL=postgresql://benutzername:passwort@hostname:port/datenbankname
