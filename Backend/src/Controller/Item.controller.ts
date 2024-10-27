@@ -8,9 +8,10 @@ const router = Router();
 
 // Display all items
 router.get('/GetAllItems', async (req: Request, res: Response) => {
+
     try {
         const em = DI.orm.em.fork();
-        const items = await em.find(Item, {}); // 'items' is the relation
+        const items = await em.find(Item, {});
         res.status(200).json(items);
     } catch (error) {
         console.error('Error fetching Items:', error);
@@ -20,6 +21,7 @@ router.get('/GetAllItems', async (req: Request, res: Response) => {
 
 // Create a new item
 router.post('/CreateItem', async (req: Request, res:any) => {
+
     const em = DI.orm.em.fork();
     const existingItem = await em.findOne(Item, { itemName: req.body.itemName });
 
@@ -43,15 +45,15 @@ router.post('/CreateItem', async (req: Request, res:any) => {
 
 // Delete an item
 router.delete('/DeleteItem/:itemName', async (req: Request, res: any) => {
+
     try {
-        const em = DI.orm.em.fork();  // Fork the EntityManager to work in isolation
+        const em = DI.orm.em.fork();
         const item = await em.findOne(Item, { itemName: req.params.itemName });
         if (!item) {
             return res.status(404).json({ message: 'Item not found' });
         }
-        // If item is not null, proceed to remove and flush it
         await em.removeAndFlush(item);
-        return res.status(200).json(item);  // Return the deleted item
+        return res.status(200).json(item);
     } catch (error) {
         console.error('Error deleting item:', error);
         return res.status(500).json({ error: 'An error occurred while deleting the item' });
@@ -60,8 +62,9 @@ router.delete('/DeleteItem/:itemName', async (req: Request, res: any) => {
 
 // Route to search items by name
 router.get('/SearchItemByName/:itemName', async (req: Request, res: any) => {
-    const em = DI.orm.em.fork();  // Fork the EntityManager
-    const { itemName } = req.params;  // Extract item name from parameters
+
+    const em = DI.orm.em.fork();
+    const { itemName } = req.params;
 
     if (!itemName) {
         return res.status(400).json({ error: 'Search query for item name is required' });
@@ -77,7 +80,7 @@ router.get('/SearchItemByName/:itemName', async (req: Request, res: any) => {
             return res.status(404).json({ error: `No item found with name ${itemName}` });
         }
 
-        return res.status(200).json(items);  // Successful response with found items
+        return res.status(200).json(items);
     } catch (error) {
         console.error('Error searching item by name:', error);
         return res.status(500).json({ error: 'An error occurred while searching by item name' });
@@ -86,7 +89,8 @@ router.get('/SearchItemByName/:itemName', async (req: Request, res: any) => {
 
 // Route to search items by description
 router.get('/SearchItemByDescription/:itemDescription', async (req: Request, res: any) => {
-    const em = DI.orm.em.fork();  // Fork the EntityManager
+
+    const em = DI.orm.em.fork();
     const itemDescription = req.params.itemDescription;
 
     if (!itemDescription) {
@@ -102,7 +106,7 @@ router.get('/SearchItemByDescription/:itemDescription', async (req: Request, res
             return res.status(404).json({ error: `No item found with description ${itemDescription}` });
         }
 
-        return res.status(200).json(items);  // Successful response with found items
+        return res.status(200).json(items);
     } catch (error) {
         console.error('Error searching item by description:', error);
         return res.status(500).json({ error: 'An error occurred while searching by item description' });
@@ -111,6 +115,7 @@ router.get('/SearchItemByDescription/:itemDescription', async (req: Request, res
 
 // Update item name
 router.put('/ChangeItemName/:itemName', async (req: Request, res: any) => {
+
     const em = DI.orm.em.fork(); // Forked EntityManager for isolated work
     const existingItem = await em.findOne(Item, {
         itemName: req.params.itemName
@@ -119,12 +124,9 @@ router.put('/ChangeItemName/:itemName', async (req: Request, res: any) => {
     if (!existingItem) {
         return res.status(404).json({ message: `Item with name ${req.params.itemName} not found` });
     }
-
-    // Set the new name of the item
     existingItem.itemName = req.body.itemName;
 
     try {
-        // Save changes to the database
         await em.flush();
         return res.status(200).json({ message: `Item name changed to ${existingItem.itemName}` });
     } catch (error) {
@@ -143,12 +145,9 @@ router.put('/ChangeItemDescription/:itemDescription', async (req: Request, res: 
     if (!existingItem) {
         return res.status(404).json({ message: `Item with description ${req.params.itemDescription} not found` });
     }
-
-    // Set the new description of the item
     existingItem.itemDescription = req.body.itemDescription;
 
     try {
-        // Save changes to the database
         await em.flush();
         return res.status(200).json({ message: `Item description changed to ${existingItem.itemDescription}` });
     } catch (error) {

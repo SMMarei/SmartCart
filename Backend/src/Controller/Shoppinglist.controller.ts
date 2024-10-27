@@ -44,14 +44,13 @@ router.post('/CreateShoppingList', async (req: Request, res: any) => {
 // Delete a shopping list
 router.delete('/DeleteShoppingList/:listName', async (req: Request, res: any) => {
     try {
-        const em = DI.orm.em.fork();  // Fork the EntityManager to work in isolation
+        const em = DI.orm.em.fork();
         const shoppingList = await em.findOne(ShoppingList, { listName: req.params.listName });
         if (!shoppingList) {
             return res.status(404).json({ message: 'Shopping list not found' });
         }
-        // If shoppingList is not null, proceed to remove and flush it
         await em.removeAndFlush(shoppingList);
-        return res.status(200).json(shoppingList);  // Return the deleted shopping list
+        return res.status(200).json(shoppingList);
     } catch (error) {
         console.error('Error deleting shopping list:', error);
         return res.status(500).json({ error: 'An error occurred while deleting the list' });
@@ -68,7 +67,6 @@ router.get('/SearchShoppingListByName/:listName', async (req: Request, res: any)
     }
 
     try {
-        // Search for lists containing the name
         const lists = await em.find(ShoppingList, {
             listName: { $like: `%${listName}%` }
         }, { populate: ['items'] });  // Populate to also load the items
@@ -94,7 +92,6 @@ router.get('/SearchShoppingListByDescription/:listDescription', async (req: Requ
     }
 
     try {
-        // Search for lists containing the description
         const lists = await em.find(ShoppingList, {
             listDescription: { $like: `%${listDescription}%` }
         }, { populate: ['items'] });
@@ -120,10 +117,7 @@ router.get('/GetShoppingListWithItem/:itemName', async (req: Request, res: any) 
             return res.status(404).json({ message: 'Item not found' });
         }
 
-        // Find all ShoppinglistItemDTOs containing this item
         const shoppingListItems = await DI.em.find(ShoppingListItem, { item }, { populate: ['shoppingList'] });
-
-        // Extract the shopping lists from the found ShoppinglistItemDTOs
         const shoppingLists = shoppingListItems.map(listItem => listItem.shoppingList);
 
         if (shoppingLists.length === 0) {
@@ -137,21 +131,18 @@ router.get('/GetShoppingListWithItem/:itemName', async (req: Request, res: any) 
     }
 });
 
-
 // Add item to ShoppingList
-router.put('/addItemToShoppingList/:listName', async (req: Request, res: any) => {
+router.put('/AddItemToShoppingList/:listName', async (req: Request, res: any) => {
     const em = DI.orm.em.fork();
-    const listName = req.params.listName;  // Shopping list name from URL
-    const { itemName, description, image, quantity, status } = req.body;  // Item details from request body
+    const listName = req.params.listName;
+    const { itemName, description, image, quantity, status } = req.body;
 
     try {
-        // Find shopping list by name
         const list = await em.findOne(ShoppingList, { listName: listName }, { populate: ['items'] });
         if (!list) {
             return res.status(404).json({ message: 'Shopping list not found' });
         }
 
-        // Check if the item already exists
         let item = await em.findOne(Item, { itemName });
         if (!item) {
             // If item does not exist, create a new one
@@ -159,14 +150,12 @@ router.put('/addItemToShoppingList/:listName', async (req: Request, res: any) =>
             await em.persistAndFlush(item);  // Save the new item
         }
 
-        // Check if the item is already in the shopping list
         const existingItemInList = await em.findOne(ShoppingListItem, {
             shoppingList: list,
             item: item,
         });
 
         if (existingItemInList) {
-            // If the item is already in the shopping list, return an error message
             return res.status(400).json({ message: 'Item already exists in the shopping list' });
         }
 
@@ -176,13 +165,13 @@ router.put('/addItemToShoppingList/:listName', async (req: Request, res: any) =>
         listItem.item = item;
         listItem.nameOfItem = itemName;
         listItem.description = description;
-        listItem.quantity = quantity || 1;  // If no quantity is specified, set to 1
-        listItem.status = status ?? false;  // Default status is 'not purchased' (false)
+        listItem.quantity = quantity || 1;
+        listItem.status = status ?? false;
 
         // Save the new entry in the list
         await em.persistAndFlush(listItem);
 
-        return res.status(201).json(listItem);  // Successful response with newly added item
+        return res.status(201).json(listItem);
     } catch (error) {
         console.error('Error adding item to shopping list:', error);
         return res.status(500).json({ error: 'An error occurred while adding the item' });
@@ -190,9 +179,9 @@ router.put('/addItemToShoppingList/:listName', async (req: Request, res: any) =>
 });
 
 // Delete item from ShoppingList
-router.delete('/deleteItemFromShoppingList/:listName/:itemName', async (req: Request, res: any) => {
+router.delete('/DeleteItemFromShoppingList/:listName/:itemName', async (req: Request, res: any) => {
     const em = DI.orm.em.fork();
-    const listName = req.params.listName;  // Name of shopping list and item from parameters
+    const listName = req.params.listName;
     const itemName = req.params.itemName;
     try {
         // Find shopping list by name
@@ -226,7 +215,6 @@ router.delete('/deleteItemFromShoppingList/:listName/:itemName', async (req: Req
         return res.status(500).json({ error: 'An error occurred while deleting the item from the shopping list' });
     }
 });
-
 
 // Freestyle #1: Sort shopping lists by last updated
 router.get('/SortLastUpdatedShoppingList', async (req: Request, res: any) => {
