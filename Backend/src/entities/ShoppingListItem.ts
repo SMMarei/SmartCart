@@ -1,13 +1,9 @@
-import {Entity, PrimaryKey, Property, ManyToOne} from '@mikro-orm/core';
-import { ShoppingList} from "./ShoppingList";
-import { Item} from "./Item";
-import { v4 } from 'uuid';
+import {Entity, ManyToOne, PrimaryKey, Property} from '@mikro-orm/core';
+import {ShoppingList} from "./ShoppingList";
+import {Item} from "./Item";
+import {v4} from 'uuid';
+import {ItemStatus} from './ItemStatus'
 
-export enum ItemStatus {
-    PENDING = 'pending',
-    PURCHASED = 'purchased',
-    CANCELLED = 'cancelled'
-}
 
 @Entity()
 export class ShoppingListItem {

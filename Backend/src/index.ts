@@ -1,16 +1,16 @@
 import express from "express";
 import http from 'http';
-import { MikroORM, EntityManager, RequestContext, EntityRepository } from '@mikro-orm/core';
+import {EntityManager, EntityRepository, MikroORM, RequestContext} from '@mikro-orm/core';
 import options from './mikro-orm.config'; // MikroORM-Konfiguration importieren
-import { Item } from './entities/Item';
-import { ShoppingList } from "./entities/ShoppingList";
+import {Item} from './entities/Item';
+import {ShoppingList} from "./entities/ShoppingList";
 import {itemController} from "./Controller/Item.controller";
 import {ShoppingListController} from "./Controller/Shoppinglist.controller";
 
-
-const PORT = 4000;
+const PORT = 3000;
 const app = express();
 
+// DI-Objekt initialisieren
 export const DI = {} as {
     server: http.Server;
     orm: MikroORM;
@@ -26,7 +26,6 @@ export const initializeServer = async () => {
 
     DI.orm = orm;
     DI.em = em;
-
     DI.itemRepository = em.getRepository(Item);
     DI.shoppingListRepository = em.getRepository(ShoppingList);
 
@@ -36,7 +35,7 @@ export const initializeServer = async () => {
 
     // Routen für Items und Shoppinglisten verwenden
     app.use('/Items', itemController);
-    app.use('/ShoppingList', ShoppingListController);
+    app.use('/ShoppingLists', ShoppingListController);
 
     // Server starten
     DI.server = app.listen(PORT, () => {
@@ -44,6 +43,9 @@ export const initializeServer = async () => {
     });
 };
 
+// Nur im Produktionsmodus den Server starten
 if (process.env.environment !== 'test') {
-    initializeServer();
+    initializeServer().catch(err => {
+        console.error('Error initializing server:', err);
+    });
 }

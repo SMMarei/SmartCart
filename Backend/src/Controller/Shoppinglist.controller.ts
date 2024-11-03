@@ -1,230 +1,145 @@
-import { Request, Response, Router } from 'express';
-import { DI } from '../index';
-import { ShoppingList } from '../entities/ShoppingList';
-import { Item } from '../entities/Item';
-import { ShoppingListItem } from '../entities/ShoppingListItem';
+import {Request, Response, Router} from 'express';
+import {DI} from '../index';
+import {ShoppingList} from '../entities/ShoppingList';
+import {z} from 'zod';
+import {handleError, handleNotFound, handleValidationError} from "../Services/ErrorHandler";
+import {ShoppingListService} from "../Services/ShoppingListService";
 
-const router = Router({ mergeParams: true });
+
+const router = Router({mergeParams: true});
+const shoppingListService = new ShoppingListService();
+
 
 // Display all shopping lists, including linked items
-router.get('/GetAllShoppingList', async (req: Request, res: Response) => {
+router.get('/AllShoppingList', async (req: Request, res: Response) => {
     try {
         const em = DI.orm.em.fork();
-        const lists = await em.find(ShoppingList, {}, { populate: ['items'] }); // 'items' represents the relation
+        const lists = await em.find(ShoppingList, {}, {populate: ['items']}); // 'items' represents the relation
         res.status(200).json(lists);
     } catch (error) {
         console.error('Error fetching shopping lists:', error);
-        res.status(500).json({ error: 'An error occurred while fetching the shopping lists' });
+        res.status(500).json({error: 'An error occurred while fetching the shopping lists'});
     }
 });
 
 // Create a new shopping list
-router.post('/CreateShoppingList', async (req: Request, res: any) => {
-    const em = DI.orm.em.fork();
-    const existingShoppingList = await em.findOne(ShoppingList, { listName: req.body.listName });
-
-    if (!req.body.listName) {
-        return res.status(400).json({ error: 'Name is required to create a shopping list.' });
-    }
-
-    if (existingShoppingList) {
-        return res.status(400).json({ error: `Shopping list with name ${req.body.listName} already exists` });
-    }
+router.post('/NewShoppingList', async (req: Request, res: Response) => {
     try {
-        const newList = new ShoppingList(req.body.listName, req.body.listDescription);
-        em.persist(newList);
-        await em.flush();
-        return res.status(201).json(newList);
+        const newList = await shoppingListService.createShoppingList(req.body); // 'await' hinzugefügt
+        res.status(201).json(newList);
     } catch (error) {
-        console.error('Error creating shopping list:', error);
-        return res.status(500).json({ error: 'An error occurred while creating the shopping list' });
+        if (error instanceof z.ZodError) {
+            handleValidationError(res, error, 'Validation failed');
+        } else {
+            handleError(res, error as Error, 'Error creating new shopping list');
+        }
     }
 });
 
 // Delete a shopping list
-router.delete('/DeleteShoppingList/:listName', async (req: Request, res: any) => {
+router.delete('/:listName', async (req: Request, res: any) => {
     try {
-        const em = DI.orm.em.fork();
-        const shoppingList = await em.findOne(ShoppingList, { listName: req.params.listName });
-        if (!shoppingList) {
-            return res.status(404).json({ message: 'Shopping list not found' });
-        }
-        await em.removeAndFlush(shoppingList);
-        return res.status(200).json(shoppingList);
+        const shoppingList = shoppingListService.deleteShoppingList(req.params.listName);
+        res.status(200).json(shoppingList);
     } catch (error) {
-        console.error('Error deleting shopping list:', error);
-        return res.status(500).json({ error: 'An error occurred while deleting the list' });
+        handleError(res, error as Error, 'An error occurred while deleting the list')
     }
 });
 
 // Route to search for shopping lists by name
-router.get('/SearchShoppingListByName/:listName', async (req: Request, res: any) => {
-    const em = DI.orm.em.fork();
-    const listName = req.params.listName;
-
-    if (!listName) {
-        return res.status(400).json({ error: 'Search query for name is required' });
-    }
+router.get('/ShoppingListByName/:listName', async (req: Request, res: any) => {
 
     try {
-        const lists = await em.find(ShoppingList, {
-            listName: { $like: `%${listName}%` }
-        }, { populate: ['items'] });  // Populate to also load the items
-
+        const lists = await shoppingListService.searchShoppingListByName(req.params.listName);
         if (lists.length === 0) {
-            return res.status(404).json({ error: `No shopping lists found with name ${listName}` });
+            return res.status(404).json({error: `No shopping lists found with name ${req.params.listName}`});
         }
-
         return res.status(200).json(lists);
     } catch (error) {
-        console.error('Error searching shopping list by name:', error);
-        return res.status(500).json({ error: 'An error occurred while searching by name' });
+        handleError(res, error as Error, 'An error occurred while searching by name');
     }
 });
 
 // Route to search for shopping lists by description
-router.get('/SearchShoppingListByDescription/:listDescription', async (req: Request, res: any) => {
-    const em = DI.orm.em.fork();
-    const listDescription = req.params.listDescription;
-
-    if (!listDescription) {
-        return res.status(400).json({ error: 'Search query for description is required' });
-    }
-
+router.get('/ShoppingListByDescription/:listDescription', async (req: Request, res: any) => {
     try {
-        const lists = await em.find(ShoppingList, {
-            listDescription: { $like: `%${listDescription}%` }
-        }, { populate: ['items'] });
-
+        const lists = await shoppingListService.searchShoppingListByDescription(req.params.listDescription);
         if (lists.length === 0) {
-            return res.status(404).json({ message: `No shopping lists found with description ${listDescription}` });
+            return res.status(404).json({error: `No shopping lists found with Description ${req.params.listDescription}`});
         }
-
         return res.status(200).json(lists);
     } catch (error) {
-        console.error('Error searching shopping list by description:', error);
-        return res.status(500).json({ error: 'An error occurred while searching by description' });
+        handleError(res, error as Error, 'An error occurred while searching by Description');
     }
 });
 
-// Return shopping lists with a specific item
-router.get('/GetShoppingListWithItem/:itemName', async (req: Request, res: any) => {
+// Update a shopping list Name and Description
+router.put('/ShoppingList/:listName', async (req: Request, res: any) => {
     try {
-        // Find the item by name
-        const itemName = req.params.itemName;
-        const item = await DI.em.findOne(Item, { itemName: itemName });
-        if (!item) {
-            return res.status(404).json({ message: 'Item not found' });
+        const updatedList = await shoppingListService.updateNameShoppingList(req.params.listName, req.body);
+        res.status(200).json(updatedList);
+    } catch (error) {
+        if (error instanceof z.ZodError) {
+            handleValidationError(res, error, 'Validation failed');
+        } else {
+            handleError(res, error as Error, 'Error updating the shopping list');
         }
+    }
+});
 
-        const shoppingListItems = await DI.em.find(ShoppingListItem, { item }, { populate: ['shoppingList'] });
-        const shoppingLists = shoppingListItems.map(listItem => listItem.shoppingList);
+// Route für das Abrufen von Einkaufslisten mit einem bestimmten Item
+router.get('/ShoppingListWithItem/:itemName', async (req: Request, res: any) => {
+    const {itemName} = req.params;
+    try {
+        const shoppingLists = await shoppingListService.findShoppingListsWithItem(itemName);
 
         if (shoppingLists.length === 0) {
-            return res.status(404).json({ message: `No shopping lists found containing ${itemName}` });
+            return handleNotFound(res, `No shopping lists found containing ${itemName}`);
         }
 
         return res.status(200).json(shoppingLists);
     } catch (error) {
         console.error('Error fetching shopping lists with item:', error);
-        return res.status(500).json({ message: 'An error occurred while fetching the lists' });
+        return handleError(res, error as Error, 'An error occurred while fetching the lists');
     }
 });
 
-// Add item to ShoppingList
-router.put('/AddItemToShoppingList/:listName', async (req: Request, res: any) => {
-    const em = DI.orm.em.fork();
-    const listName = req.params.listName;
-    const { itemName, description, image, quantity, status } = req.body;
-
+router.post('/ItemToShoppingList/:listName', async (req: Request, res: Response) => {
     try {
-        const list = await em.findOne(ShoppingList, { listName: listName }, { populate: ['items'] });
-        if (!list) {
-            return res.status(404).json({ message: 'Shopping list not found' });
-        }
-
-        let item = await em.findOne(Item, { itemName });
-        if (!item) {
-            // If item does not exist, create a new one
-            item = new Item(itemName, description || 'No description', image || '');
-            await em.persistAndFlush(item);  // Save the new item
-        }
-
-        const existingItemInList = await em.findOne(ShoppingListItem, {
-            shoppingList: list,
-            item: item,
-        });
-
-        if (existingItemInList) {
-            return res.status(400).json({ message: 'Item already exists in the shopping list' });
-        }
-
-        // Add item to the shopping list
-        const listItem = new ShoppingListItem();
-        listItem.shoppingList = list;
-        listItem.item = item;
-        listItem.nameOfItem = itemName;
-        listItem.description = description;
-        listItem.quantity = quantity || 1;
-        listItem.status = status ?? false;
-
-        // Save the new entry in the list
-        await em.persistAndFlush(listItem);
-
-        return res.status(201).json(listItem);
+        const listName = req.params.listName;
+        const newItem = await shoppingListService.addItemsToShoppingList(listName, req.body);
+        res.status(201).json(newItem);
     } catch (error) {
-        console.error('Error adding item to shopping list:', error);
-        return res.status(500).json({ error: 'An error occurred while adding the item' });
+        handleValidationError(res, error as Error, 'Error adding item to shopping list');
     }
 });
 
 // Delete item from ShoppingList
-router.delete('/DeleteItemFromShoppingList/:listName/:itemName', async (req: Request, res: any) => {
-    const em = DI.orm.em.fork();
-    const listName = req.params.listName;
-    const itemName = req.params.itemName;
+    router.delete('/ItemFromShoppingList/:listName/:itemName', async (req: Request, res: any) => {
+    const {listName, itemName} = req.params;
+
     try {
-        // Find shopping list by name
-        const list = await em.findOne(ShoppingList, { listName: listName }, { populate: ['items'] });
-        if (!list) {
-            return res.status(404).json({ message: 'Shopping list not found' });
-        }
-
-        // Check if item exists
-        const item = await em.findOne(Item, { itemName: itemName });
-        if (!item) {
-            return res.status(404).json({ message: 'Item not found' });
-        }
-
-        // Check if item exists in the shopping list
-        const listItem = await em.findOne(ShoppingListItem, {
-            shoppingList: list,
-            item: item
-        });
-
-        if (!listItem) {
-            return res.status(404).json({ message: 'Item not found in the shopping list' });
-        }
-
-        // Remove item from the shopping list
-        await em.removeAndFlush(listItem);  // Delete entry in ShoppingListItem
-
-        return res.status(200).json({ message: 'Item removed from the shopping list successfully' });
+        // Rufe die Service-Methode zum Löschen auf
+        const result = await shoppingListService.deleteItemFromShoppingList(listName, itemName);
+        return res.status(200).json(result);
     } catch (error) {
-        console.error('Error deleting item from shopping list:', error);
-        return res.status(500).json({ error: 'An error occurred while deleting the item from the shopping list' });
+        handleValidationError(res, error as Error, 'An error occurred while deleting the item from the shopping list');
     }
 });
 
 // Freestyle #1: Sort shopping lists by last updated
-router.get('/SortLastUpdatedShoppingList', async (req: Request, res: any) => {
-    const em = DI.orm.em.fork();
+router.get('/LastUpdatedShoppingList', async (req: Request, res: any) => {
+
     try {
-        const shoppingLists = await em.find(ShoppingList, {}, { orderBy: { listUpdatedAt: "desc" }, limit: 10 });
-        return res.status(200).json(shoppingLists);
+        const lastUpdatedList = await shoppingListService.sortShoppingListsByLastUpdated
+        (req.query.limit ? parseInt(req.query.limit as string) : 10);
+        return res.status(200).json(lastUpdatedList);
     } catch (error) {
-        console.error('Error fetching last updated lists:', error);
-        return res.status(500).json({ error: 'An error occurred while fetching last updated lists' });
+        if (error instanceof z.ZodError) {
+            handleValidationError(res, error, 'Validation failed');
+        } else {
+            handleError(res, error as Error, 'Error while Sorting the updated shopping list');
+        }
     }
 });
 export const ShoppingListController = router;

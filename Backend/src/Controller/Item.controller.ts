@@ -1,210 +1,116 @@
-import { Request, Response, Router } from 'express';
-import { DI } from '../index';
-import { Item } from '../entities/Item';
-import { ShoppingList } from '../entities/ShoppingList';
-import { ShoppingListItem } from '../entities/ShoppingListItem';
+import {Request, Response, Router} from 'express';
+import {DI} from '../index';
+import {Item} from '../entities/Item';
+import {ShoppingListItem} from '../entities/ShoppingListItem';
+import {z} from 'zod';
+import {handleError, handleValidationError} from '../Services/ErrorHandler';
+import {ItemService} from '../Services/ItemService';
+
 
 const router = Router();
+const itemService = new ItemService();
 
 // Display all items
-router.get('/GetAllItems', async (req: Request, res: Response) => {
+router.get('/AllItems', async (req: Request, res: Response) => {
 
     try {
         const em = DI.orm.em.fork();
         const items = await em.find(Item, {});
         res.status(200).json(items);
     } catch (error) {
-        console.error('Error fetching Items:', error);
-        res.status(500).json({ error: 'An error occurred while fetching the items' });
+        handleError(res, error as Error, 'Error fetching items');
     }
-});
+},);
 
-// Create a new item
-router.post('/CreateItem', async (req: Request, res:any) => {
-
-    const em = DI.orm.em.fork();
-    const existingItem = await em.findOne(Item, { itemName: req.body.itemName });
-
-    if (!req.body.itemName) {
-        return res.status(400).json({ error: 'Name is required to create an item.' });
-    }
-
-    if(existingItem){
-        return res.status(400).json({error: `Item with name ${req.body.itemName} already exists`});
-    }
+// Create Item with Validation
+router.post('/NewItem', async (req: Request, res: any) => {
     try {
-        const newItem = new Item(req.body.itemName, req.body.itemDescription, req.body.image);
-        em.persist(newItem);
-        await em.flush();
-        return res.status(201).json(newItem);
+        const newItem = await itemService.createItem(req.body);
+        res.status(201).json(newItem);
     } catch (error) {
-        console.error('Error creating item:', error);
-        return res.status(500).json({ error: 'An error occurred while creating the item' });
+        console.error('Validation error:', error);
+        const zodError = error instanceof z.ZodError ? error.format() : error;
+        return res.status(400).json({error: 'Validation failed', details: zodError});
     }
 });
 
 // Delete an item
-router.delete('/DeleteItem/:itemName', async (req: Request, res: any) => {
-
+router.delete('/:itemName', async (req: Request, res: Response) => {
     try {
-        const em = DI.orm.em.fork();
-        const item = await em.findOne(Item, { itemName: req.params.itemName });
-        if (!item) {
-            return res.status(404).json({ message: 'Item not found' });
-        }
-        await em.removeAndFlush(item);
-        return res.status(200).json(item);
+        const item = await itemService.deleteItem(req.params.itemName);
+        res.status(200).json(item);
     } catch (error) {
-        console.error('Error deleting item:', error);
-        return res.status(500).json({ error: 'An error occurred while deleting the item' });
+        handleError(res, error as Error, 'Error deleting item');
     }
 });
 
-// Route to search items by name
-router.get('/SearchItemByName/:itemName', async (req: Request, res: any) => {
-
-    const em = DI.orm.em.fork();
-    const { itemName } = req.params;
-
-    if (!itemName) {
-        return res.status(400).json({ error: 'Search query for item name is required' });
-    }
-
+// Search items by name
+router.get('/:itemName', async (req: Request, res: any) => {
     try {
-        // Search for items containing the name
-        const items = await em.find(Item, {
-            itemName: { $like: `%${itemName}%` }
-        });
-
+        const items = await itemService.searchItemByName(req.params.itemName);
         if (items.length === 0) {
-            return res.status(404).json({ error: `No item found with name ${itemName}` });
+            return res.status(404).json({error: `No item found with name ${req.params.itemName}`});
         }
-
-        return res.status(200).json(items);
+        res.status(200).json(items);
     } catch (error) {
-        console.error('Error searching item by name:', error);
-        return res.status(500).json({ error: 'An error occurred while searching by item name' });
+        handleError(res, error as Error, 'Error searching items by name');
     }
 });
 
-// Route to search items by description
-router.get('/SearchItemByDescription/:itemDescription', async (req: Request, res: any) => {
-
-    const em = DI.orm.em.fork();
-    const itemDescription = req.params.itemDescription;
-
-    if (!itemDescription) {
-        return res.status(400).json({ error: 'Search query for item description is required' });
-    }
-
+// Search items by description
+router.get('/ItemByDescription/:itemDescription', async (req: Request, res: any) => {
     try {
-        const items = await em.find(Item, {
-            itemDescription: { $like: `%${itemDescription}%` }
-        });
-
+        const items = await itemService.searchItemByDescription(req.params.itemDescription);
         if (items.length === 0) {
-            return res.status(404).json({ error: `No item found with description ${itemDescription}` });
+            return res.status(404).json({error: `No item found with description ${req.params.itemDescription}`});
         }
-
-        return res.status(200).json(items);
+        res.status(200).json(items);
     } catch (error) {
-        console.error('Error searching item by description:', error);
-        return res.status(500).json({ error: 'An error occurred while searching by item description' });
+        handleError(res, error as Error, 'Error searching items by description');
     }
 });
 
 // Update item name
-router.put('/ChangeItemName/:itemName', async (req: Request, res: any) => {
-
-    const em = DI.orm.em.fork(); // Forked EntityManager for isolated work
-    const existingItem = await em.findOne(Item, {
-        itemName: req.params.itemName
-    });
-
-    if (!existingItem) {
-        return res.status(404).json({ message: `Item with name ${req.params.itemName} not found` });
-    }
-    existingItem.itemName = req.body.itemName;
-
+router.put('/:itemName', async (req: Request, res: any) => {
     try {
-        await em.flush();
-        return res.status(200).json({ message: `Item name changed to ${existingItem.itemName}` });
+        const updatedItem = await itemService.updateItemName(req.params.itemName, req.body);
+        res.status(200).json({message: `Item name changed to ${updatedItem.itemName}`});
     } catch (error) {
-        console.error('Error updating item name:', error);
-        return res.status(500).json({ message: 'An error occurred while updating item name' });
+        handleValidationError(res, error as Error, 'Validation error');
     }
 });
 
-// Update item description
-router.put('/ChangeItemDescription/:itemDescription', async (req: Request, res: any) => {
-    const em = DI.orm.em.fork(); // Forked EntityManager for isolated work
-    const existingItem = await em.findOne(Item, {
-        itemDescription: req.params.itemDescription
-    });
-
-    if (!existingItem) {
-        return res.status(404).json({ message: `Item with description ${req.params.itemDescription} not found` });
-    }
-    existingItem.itemDescription = req.body.itemDescription;
-
+// Toggle favorite status for item
+router.put('/Favorite/:itemName', async (req: Request, res: any) => {
     try {
-        await em.flush();
-        return res.status(200).json({ message: `Item description changed to ${existingItem.itemDescription}` });
+        const item = await itemService.toggleItemToFavorite(req.params.itemName);
+        res.status(200).json({message: `Item ${item.itemName} is now ${item.isFavorite ? 'a favorite' : 'not a favorite'}`});
     } catch (error) {
-        console.error('Error updating item description:', error);
-        return res.status(500).json({ message: 'An error occurred while updating item description' });
+        handleError(res, error as Error, 'Error toggling favorite status');
     }
 });
 
-// Freestyle 1# Toggle favorite status for item
-router.put('/ToggleFavorite/:itemName', async (req: Request, res: any) => {
-    const em = DI.orm.em.fork();
-
+// Get all favorite items
+router.get('/AllFavoriteItems', async (req: Request, res: any) => {
     try {
-        const item = await em.findOne(Item, { itemName: req.params.itemName });
-        if (!item) {
-            return res.status(404).json({ message: 'Item not found' });
-        }
-
-        // Toggle favorite status
-        item.isFavorite = !item.isFavorite;
-        await em.flush();
-
-        return res.status(200).json({ message: `Item ${item.itemName} is now ${item.isFavorite ? 'a favorite' : 'not a favorite'}` });
-    } catch (error) {
-        console.error('Error toggling favorite status:', error);
-        return res.status(500).json({ error: 'An error occurred while toggling favorite status' });
-    }
-});
-
-// Freestyle 1 # Get all favorite items
-router.get('/GetFavoriteItems', async (req: Request, res: any) => {
-    const em = DI.orm.em.fork();
-
-    try {
-        // Find all items marked as favorite
-        const favoriteItems = await em.find(Item, { isFavorite: true });
-
+        const favoriteItems = await itemService.getFavoriteItems();
         if (favoriteItems.length === 0) {
-            return res.status(404).json({ message: 'No favorite items found' });
+            return res.status(404).json({message: 'No favorite items found'});
         }
-
-        return res.status(200).json(favoriteItems);
+        res.status(200).json(favoriteItems);
     } catch (error) {
-        console.error('Error fetching favorite items:', error);
-        return res.status(500).json({ error: 'An error occurred while fetching favorite items' });
+        handleError(res, error as Error, 'Error fetching favorite items');
     }
 });
 
 // Freestyle 1 #  Get popular items based on quantity
-router.get('/GetPopularItems', async (req: Request, res: any) => {
+router.get('/PopularItems', async (req: Request, res: any) => {
     const em = DI.orm.em.fork();
     try {
-        const listItems = await em.find(ShoppingListItem, {}, { orderBy: { quantity: 'DESC' }, limit: 10 });
+        const listItems = await em.find(ShoppingListItem, {}, {orderBy: {quantity: 'DESC'}, limit: 10});
         return res.status(200).json(listItems);
     } catch (error) {
-        console.error('Error fetching popular items:', error);
-        return res.status(500).json({ error: 'An error occurred while fetching popular items' });
+        handleError(res, error as Error, 'Error fetching items');
     }
 });
 

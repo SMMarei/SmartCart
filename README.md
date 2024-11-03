@@ -31,30 +31,80 @@ Als Webserver wird Express genutzt. Die Daten sind in einer PostgreSQL Datenbank
 - **Sortierung nach Aktualisierungsdatum**: Einkaufslisten können nach dem letzten Änderungsdatum sortiert werden.
 - **Favoriten-Status**: Einkäufe können als Favoriten markiert und gefiltert werden.
 
+## Technologien
+- **Backend**: Node.js, Express, TypeScript, PostgreSQL, Mikro-ORM
+- **Frontend**: React, TypeScript, Material-UI
+- **Datenbank**: PostgreSQL
+- **Linting**: ESLint
+- **Code-Formatierung**: Prettier
+
+##  Projektstruktur
+    .
+    ├── backend                 # Backend-Verzeichnis
+    │   ├── src                 # Backend-Quellcode
+    │   │   ├── controller      # Controller für die Routen
+    │   │   ├── entities        # Datenbank-Entitäten
+    │   │   ├── services        # Services für die Routen
+    │   │   ├── index.ts        # Startpunkt der Anwendung
+    │   ├── mikro-orm.config.ts # Konfiguration für Mikro-ORM
+    │   ├── package.json        # Abhängigkeiten und Skripte
+    │   └── tsconfig.json       # TypeScript-Konfiguration
+    ├── frontend                # Frontend-Verzeichnis
+    │   ├── public              # Öffentliche Dateien
+    │   ├── src                 # Frontend-Quellcode
+    │   │   ├── components      # Komponenten
+    │   │   ├── pages           # Seiten
+    │   │   ├── services        # Services für die API-Anfragen
+    │   │   ├── App.tsx         # Hauptkomponente
+    │   ├── package.json        # Abhängigkeiten und Skripte
+    │   └── tsconfig.json       # TypeScript-Konfiguration
+    ├── .eslintrc.js            # ESLint-Konfiguration
+    ├── .gitignore              # Dateien und Verzeichnisse, die nicht getrackt werden sollen
+    ├── .prettierrc             # Prettier-Konfiguration
+    ├── README.md               # Dokumentation des Projekts
+    └── package.json            # Abhängigkeiten und Skripte
+
 ##  Routenstruktur
     Backend:
-    - `GET /shoppingLists/GetAllShoppingLists`: Ruft eine Liste aller Einkaufslisten ab.
-    - `POST /shoppingLists/CreateShoppingList`: Erstellt eine neue Einkaufsliste.
-    - `DELETE /shoppingLists/DeleteShoppingList/:listName`: Löscht eine bestimmte Einkaufsliste.
-    - `PUT /shoppingLists/AddItemToShoppingList/:listName/:itemName`: Fügt einen Artikel zu einer bestimmten Einkaufsliste hinzu.
-    - `PUT /shoppingLists/DeleteItemFromShoppingList/:listName/:itemName`: Entfernt einen Artikel von einer bestimmten Einkaufsliste.
-    - `GET /shoppingLists/SearchShoppingListByName/:listName`: Ruft eine Einkaufsliste anhand ihres Namens ab.
-    - `GET /shoppingLists/SearchShoppingListByDescription/:listDescription`: Ruft Einkaufsliste anhand ihrer Beschreibung ab.
-    - `GET /shoppingLists/GetShoppingListWithItem/:itemName`: Ruft Einkaufsliste  mit bestimmten Artikel ab.   
-    - `GET /shoppingLists/SortLastUpdatedShoppingList`: Freestyle Task 1. Sortiert Einkaufsliste nach dem letzten Änderungsdatum.
+    - `GET /ShoppingLists/AllShoppingLists`: Ruft eine Liste aller Einkaufslisten ab.
+    - `POST /ShoppingLists/NewShoppingList`: Erstellt eine neue Einkaufsliste.
+    - `DELETE /ShoppingLists/:listName`    : Löscht eine bestimmte Einkaufsliste.
+    - `POST /ShoppingLists/ItemToShoppingList/:listName`: Fügt einen Artikel zu einer bestimmten Einkaufsliste hinzu.
+    - 'Delete /ShoppingLists/ItemFromShoppingList/:listName/:itemName': Entfernt einen Artikel von einer bestimmten Einkaufsliste.
+    - `PUT /ShoppingLists/DeleteItemFromShoppingList/:listName/:itemName`: Entfernt einen Artikel von einer bestimmten Einkaufsliste.
+    - `GET /ShoppingLists/ShoppingListByName/:listName`: Ruft eine Einkaufsliste anhand ihres Namens ab.
+    - `GET /ShoppingLists/ShoppingListByDescription/:listDescription`: Ruft Einkaufsliste anhand ihrer Beschreibung ab.
+    - `PUT /ShoppingLists/ShoppingList/:listName`: Aktualisiert den Namen einer bestimmten Einkaufsliste.
+    - `GET /ShoppingLists/ShoppingListWithItem/:itemName`: Ruft Einkaufsliste  mit bestimmten Artikel ab.   
+    - `GET /ShoppingLists/LastUpdatedShoppingList`: Freestyle Task 1. Sortiert Einkaufsliste nach dem letzten Änderungsdatum.
    
-    - `GET /items/GetPopularItems`: Freestyle Task 1. Ruft eine Liste der häufig gekauften anhad ihrer Menge ab.
-    - `GET /items/GetFavoriteItems`: Freestyle Task 1. Ruft eine Liste der favorisierten Artikeln ab.
-    - `GET /items/SearchItemsByName/:itemName`: Sucht nach Artikeln basierend auf ihrem Namen.
-    - `GET /items/SearchItemsByDescription/:itemDescription`: Sucht nach Artikeln basierend auf ihrer Beschreibung.
-    - `PUT /items/ToggleFavorite/:itemName`: Markiert einen Artikel als Favorit oder Wenn einen Favoiten Artikel als nicht Favorite .
-    - 'PUT /items/ChangeItemName/:itemName': Aktualisiert einen bestimmten Artikel. 
-    - 'PUT /items/ChangeItemDescription/:itemDescription': Aktualisiert die Beschreibung eines bestimmten Artikels.
-    - 'POST /items/CreateItem': Erstellt einen neuen Artikel.
-    - 'GET /items/GetAllItems': Ruft eine Liste aller Artikel ab.
-    - `DELETE /items/DeleteItem/:itemName`: Löscht einen bestimmten Artikel.
+    - `GET /items/PopularItems`: Freestyle Task 1. Ruft eine Liste der häufig gekauften anhad ihrer Menge ab.
+    - `GET /items/AllFavoriteItems`: Freestyle Task 1. Ruft eine Liste der favorisierten Artikeln ab.
+    - `GET /items/:itemName`: Sucht nach Artikeln basierend auf ihrem Namen.
+    - `GET /items/ItemByDescription/:itemDescription`: Sucht nach Artikeln basierend auf ihrer Beschreibung.
+    - `PUT /items/Favorite/:itemName`: Markiert einen Artikel als Favorit oder Wenn einen Favoiten Artikel als nicht Favorite .
+    - 'PUT /items/:itemName': Aktualisiert einen bestimmten Artikel.
+    - 'POST /items/NewItem': Erstellt einen neuen Artikel.
+    - 'GET /items/AllItems': Ruft eine Liste aller Artikel ab.
+    - `DELETE /items/:itemName`: Löscht einen bestimmten Artikel.
  
 ##  Aufsetzen der Applikation
+### Voraussetzungen
+- Node.js
+- PostgreSQL
+- npm
+- Git
+- pgAdmin (optional)
+- Postman (optional)
+- ESLint (optional)
+- Prettier (optional)
+- Mikro-ORM (optional)
+- Material-UI (optional)
+- React (optional)
+- TypeScript (optional)
+- Express (optional)
+
+
 ### Backend
     .env Inhalt für die Datenbankverbindung (Mikro-ORM):
         DATABASE_URL=postgresql://benutzername:passwort@hostname:port/datenbankname
@@ -67,5 +117,4 @@ Als Webserver wird Express genutzt. Die Daten sind in einer PostgreSQL Datenbank
 ### Frontend
     1. Navigieren Sie in das Frontend-Verzeichnis: `cd frontend`
     2. Installieren Sie die notwendigen Abhängigkeiten: `npm install`
-    3. Starten Sie die Anwendung: `npm start`
     
