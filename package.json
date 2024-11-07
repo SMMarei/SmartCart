@@ -1,6 +1,10 @@
 {
   "dependencies": {
     "dotenv": "^16.4.5",
+    "react-router-dom": "^6.27.0",
     "react-scripts": "^3.4.4"
+  },
+  "devDependencies": {
+    "prettier": "^3.3.3"
   }
 }
