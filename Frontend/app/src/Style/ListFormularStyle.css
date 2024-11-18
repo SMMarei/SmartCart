@@ -1,0 +1,85 @@
+/* Container, der die gesamte Seite abdeckt */
+.listpage-container {
+    display: flex;
+    justify-content: center; /* Horizontale Zentrierung */
+    align-items: center; /* Vertikale Zentrierung */
+    min-height: 75vh; /* Min. Höhe der Seite auf 100% der Viewport-Höhe */
+    background: url('../assets/hintergrund2.avif') no-repeat center center; /* Hintergrundbild */
+    background-size: contain; /* Bild deckt den gesamten Bereich ab */
+    padding: 10px; /* Etwas Abstand von den Rändern der Seite */
+    border-radius: 50px;
+}
+
+/* Styling des Formular-Containers */
+.listform-container {
+    background-color: lightblue; /* Weißer Hintergrund mit leichtem Transparent-Effekt */
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Schatten für einen 3D-Effekt */
+    width: 100%;
+    max-width: 500px; /* Maximale Breite des Formulars */
+    box-sizing: border-box;
+    margin-top: 20px;
+}
+
+/* Styling für Formular-Titel */
+.list {
+    text-align: center;
+    margin-bottom: 20px;
+    font-family: 'Arial', sans-serif;
+    font-size: 30px;
+    color: lightseagreen;
+    padding: 20px;
+}
+
+/* Styling für Formulareingaben */
+input[type="text"],
+input[type="number"],
+textarea {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid green;
+    border-radius: 10px;
+    box-sizing: border-box;
+    font-size: 16px;
+    background-color: whitesmoke;
+}
+
+/* Styling für das Bild-URL Eingabefeld */
+input[type="text"][name="image"] {
+    height: 40px;
+    background-color: #f9f9f9;
+}
+
+
+/* Styling für den Absende-Button */
+button[type="submit"] {
+    width: 100%;
+    padding: 15px;
+    background-color: darkcyan; /* Grüner Hintergrund */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 18px;
+    transition: background-color 0.3s ease;
+}
+
+/* Hover-Effekt für den Absende-Button */
+button[type="submit"]:hover {
+    background-color: darkturquoise; /* Etwas dunklerer Grünton */
+}
+
+/* Styling für die Eingabefelder, wenn sie im Fokus sind */
+input:focus, textarea:focus {
+    border-color: #4CAF50;
+    outline: none;
+}
+
+/* Hinzufügen eines kleinen Abstands zwischen den Eingabefeldern */
+input[type="text"]:not(:last-child),
+input[type="number"]:not(:last-child),
+textarea:not(:last-child) {
+    margin-bottom: 15px;
+}

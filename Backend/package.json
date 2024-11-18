@@ -25,7 +25,10 @@
   "dependencies": {
     "@mikro-orm/core": "^6.3.13",
     "@mikro-orm/postgresql": "^6.3.13",
+    "cors": "^2.8.5",
     "express": "^4.21.1",
+    "react-redux": "^9.1.2",
+    "redux": "^5.0.1",
     "uuid": "^10.0.0",
     "zod": "^3.23.8"
   },

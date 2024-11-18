@@ -1,0 +1,11 @@
+/* Root.css */
+.root-container {
+    background-image: url('../assets/background.jpeg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    min-height: 100vh;
+    padding: 20px;
+}
+
