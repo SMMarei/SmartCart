@@ -151,8 +151,9 @@ Als Webserver wird Express genutzt. Die Daten sind in einer PostgreSQL Datenbank
 ### Frontend
 
     1. Navigieren Sie in das Frontend-Verzeichnis: `cd frontend`
-    2. Installieren Sie die notwendigen Abhängigkeiten: `npm install`
-    3. Starten Sie die Anwendung: `npm run dev`
+    2. Navigation in das Frontend-Verzeichnis: `cd app`
+    3. Installieren Sie die notwendigen Abhängigkeiten: `npm install`
+    4. Starten Sie die Anwendung: `npm run dev`
 
 #
 

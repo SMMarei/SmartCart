@@ -1,169 +1,129 @@
-import { Request, Response, Router } from "express";
-import { DI } from "../index";
-import { Item } from "../entities/Item";
-import { ShoppingListItem } from "../entities/ShoppingListItem";
-import { z } from "zod";
-import {
-  BadRequest,
-  handleError,
-  handleExists,
-  handleValidationError,
-} from "../Services/ErrorHandler";
-import { ItemService } from "../Services/ItemService";
+import {Request, Response, Router} from "express";
+import {DI} from "../index";
+import {Item} from "../entities/Item";
+import {ShoppingListItem} from "../entities/ShoppingListItem";
+import {z} from "zod";
+import {BadRequest, handleError, handleExists, handleValidationError,} from "../Services/ErrorHandler";
+import {ItemService} from "../Services/ItemService";
 
 const router = Router();
 const itemService = new ItemService();
 
 // Display all items
 router.get("/AllItems", async (req: Request, res: Response) => {
-  try {
-    const em = DI.orm.em.fork();
-    const items = await em.find(Item, {});
-    res.status(200).json(items);
-  } catch (error) {
-    handleError(res, error as Error, "Error fetching items");
-  }
+    try {
+        const em = DI.orm.em.fork();
+        const items = await em.find(Item, {}, {orderBy: {itemUpdatedAt: "desc"}},);
+        res.status(200).json(items);
+    } catch (error) {
+        handleError(res, error as Error, "Error fetching items");
+    }
 });
 
 // Create Item with Validation
 router.post("/NewItem", async (req: Request, res: any) => {
-  try {
-    const newItem = await itemService.createItem(req.body);
-    res.status(201).json(newItem);
-  } catch (error) {
-    console.error("Fehler:", error); // Zum Debuggen
-    if (error instanceof Error && error.message.includes("already exists")) {
-      return handleExists(res, error.message);
-    } else {
-      const zodError = error instanceof z.ZodError ? error.format() : error;
-      return res
-        .status(400)
-        .json({ error: "Validation failed", details: zodError });
+    try {
+        const newItem = await itemService.createItem(req.body);
+        res.status(201).json(newItem);
+    } catch (error) {
+        console.error("Fehler:", error); // Zum Debuggen
+        if (error instanceof Error && error.message.includes("already exists")) {
+            return handleExists(res, error.message);
+        } else {
+            const zodError = error instanceof z.ZodError ? error.format() : error;
+            return res
+                .status(400)
+                .json({error: "Validation failed", details: zodError});
+        }
     }
-  }
 });
 
 // Delete an item
 router.delete("/:itemId", async (req: Request, res: any) => {
-  try {
-    const item = await itemService.deleteItem(req.params.itemId);
-    res.status(200).json(item);
-  } catch (error) {
-    if (
-      error instanceof Error &&
-      error.message.includes("associated with a shopping list")
-    ) {
-      return BadRequest(res, error.message);
+    try {
+        const item = await itemService.deleteItem(req.params.itemId);
+        res.status(200).json(item);
+    } catch (error) {
+        if (
+            error instanceof Error &&
+            error.message.includes("associated with a shopping list")
+        ) {
+            return BadRequest(res, error.message);
+        }
+        handleError(res, error as Error, "Error deleting item");
     }
-    handleError(res, error as Error, "Error deleting item");
-  }
 });
-
-// // Search items by name
-// router.get("/:itemName", async (req: Request, res: any) => {
-//   try {
-//     const items = await itemService.searchItemByName(req.params.itemName);
-//     if (items.length === 0) {
-//       return res
-//         .status(404)
-//         .json({ error: `No item found with name ${req.params.itemName}` });
-//     }
-//     res.status(200).json(items);
-//   } catch (error) {
-//     handleError(res, error as Error, "Error searching items by name");
-//   }
-// });
-//
-// // Search items by description
-// router.get(
-//   "/ItemByDescription/:itemDescription",
-//   async (req: Request, res: any) => {
-//     try {
-//       const items = await itemService.searchItemByDescription(
-//         req.params.itemDescription,
-//       );
-//       if (items.length === 0) {
-//         return res.status(404).json({
-//           error: `No item found with description ${req.params.itemDescription}`,
-//         });
-//       }
-//       res.status(200).json(items);
-//     } catch (error) {
-//       handleError(res, error as Error, "Error searching items by description");
-//     }
-//   },
-// );
 
 // Update item name
 router.put("/:itemId", async (req: Request, res: any) => {
-  try {
-    const updatedItem = await itemService.updateItemName(
-      req.params.itemId,
-      req.body,
-    );
-    res
-      .status(200)
-      .json({ message: `Item name changed to ${updatedItem.itemName}` });
-  } catch (error) {
-    handleValidationError(res, error as Error, "Validation error");
-  }
+    try {
+        const updatedItem = await itemService.updateItemName(
+            req.params.itemId,
+            req.body,
+        );
+        res
+            .status(200)
+            .json({message: `Item name changed to ${updatedItem.itemName}`});
+    } catch (error) {
+        handleValidationError(res, error as Error, "Validation error");
+    }
 });
 
 // Toggle favorite status for item
 router.put("/Favorite/:itemId", async (req: Request, res: any) => {
-  try {
-    const item = await itemService.toggleItemToFavorite(req.params.itemId);
-    res.status(200).json({
-      message: `Item ${item.itemId} is now ${item.isFavorite ? "a favorite" : "not a favorite"}`,
-    });
-  } catch (error) {
-    handleError(res, error as Error, "Error toggling favorite status");
-  }
+    try {
+        const item = await itemService.toggleItemToFavorite(req.params.itemId);
+        res.status(200).json({
+            message: `Item ${item.itemId} is now ${item.isFavorite ? "a favorite" : "not a favorite"}`,
+        });
+    } catch (error) {
+        handleError(res, error as Error, "Error toggling favorite status");
+    }
 });
 
 router.get("/AllFavouriteItems", async (req: Request, res: any) => {
-  try {
-    console.log("Fetching all favorite items..."); // Debug-Ausgabe
-    const items = await itemService.getAllFavoriteItems();
-    if (!items || items.length === 0) {
-      return res.status(404).json({ message: "No favorite items found" });
+    try {
+        console.log("Fetching all favorite items..."); // Debug-Ausgabe
+        const items = await itemService.getAllFavoriteItems();
+        if (!items || items.length === 0) {
+            return res.status(404).json({message: "No favorite items found"});
+        }
+        res.status(200).json(items);
+    } catch (error) {
+        console.error("Error fetching favorite items:", error); // Debug-Ausgabe
+        handleError(res, error as Error, "Error fetching favorite items");
     }
-    res.status(200).json(items);
-  } catch (error) {
-    console.error("Error fetching favorite items:", error); // Debug-Ausgabe
-    handleError(res, error as Error, "Error fetching favorite items");
-  }
 });
 
 router.post("/:itemId", async (req: Request, res: any) => {
-  try {
-    const itemId = req.params.itemId; // itemId aus den URL-Parametern
-    const shoppingListId = req.body.shoppingListId; // shoppingListId aus dem Request-Body
+    try {
+        const itemId = req.params.itemId; // itemId aus den URL-Parametern
+        const shoppingListId = req.body.shoppingListId; // shoppingListId aus dem Request-Body
 
-    const newItem = await itemService.addItemToShoppingList(
-      itemId,
-      shoppingListId,
-    );
-    return res.status(201).json(newItem);
-  } catch (error) {
-    console.error("Error:", error);
-    return res.status(400).json({ error: "Validation failed" });
-  }
+        const newItem = await itemService.addItemToShoppingList(
+            itemId,
+            shoppingListId,
+        );
+        return res.status(201).json(newItem);
+    } catch (error) {
+        console.error("Error:", error);
+        return res.status(400).json({error: "Validation failed"});
+    }
 });
 
 // Freestyle 1 #  Get popular items based on quantity
 router.get("/PopularItems", async (req: Request, res: any) => {
-  const em = DI.orm.em.fork();
-  try {
-    const listItems = await em.find(
-      ShoppingListItem,
-      {},
-      { orderBy: { quantity: "DESC" }, limit: 10 },
-    );
-    return res.status(200).json(listItems);
-  } catch (error) {
-    handleError(res, error as Error, "Error fetching items");
-  }
+    const em = DI.orm.em.fork();
+    try {
+        const listItems = await em.find(
+            ShoppingListItem,
+            {},
+            {orderBy: {quantity: "DESC"}, limit: 10},
+        );
+        return res.status(200).json(listItems);
+    } catch (error) {
+        handleError(res, error as Error, "Error fetching items");
+    }
 });
 
 export const itemController = router;
