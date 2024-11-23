@@ -46,44 +46,62 @@ Als Webserver wird Express genutzt. Die Daten sind in einer PostgreSQL Datenbank
 
 ## Projektstruktur
 
+### Backend
+
     .
     ├── backend
     │   ├── src
+    │   │   ├── controllers
+    │   │   │   ├── ItemController.ts
+    │   │   │   ├── ShoppingListController.ts
+    │   │   │   └── ...
     │   │   ├── entities
     │   │   │   ├── Item.ts
-    │   │   │   └── ShoppingList.ts
-    │   │   ├── repositories
-    │   │   │   ├── ItemRepository.ts
-    │   │   │   └── ShoppingListRepository.ts
-    │   │   ├── routes
-    │   │   │   ├── items.ts
-    │   │   │   └── shoppingLists.ts
-    │   │   ├── app.ts
-    │   │   └── index.ts
+    │   │   │   ├── ShoppingList.ts
+    │   │   │   └── ...
+    │   │   ├── services
+    │   │   │   ├── ItemService.ts
+    │   │   │   ├── ShoppingListService.ts
+    │   │   │   └── ...
     │   ├── .env
-    │   ├── .eslintrc.js
-    │   ├── .prettierrc
-    │   ├── ormconfig.js
     │   ├── package.json
     │   └── tsconfig.json
-    ├── frontend
-    │   ├── public
-    │   │   ├── index.html
-    │   │   └── ...
+
+### Frontend
+
+    .
+    ├── app
     │   ├── src
     │   │   ├── components
-    │   │   │   ├── Item.tsx
-    │   │   │   ├── ItemList.tsx
-    │   │   │   ├── ShoppingList.tsx
-    │   │   │   └── ShoppingListList.tsx
-    │   │       ├── services
-    │   │       │   ├── itemService.ts
-    │   │       │   └── shoppingListService.ts
-    │   │   
+    │   │   │   ├── AddNewItem.tsx
+    │   │   │   ├── AddShoppingList.tsx
+    │   │   │   ├── AllFavourtieItems.tsx
+    │   │   │   └── FindShoppingList
+    |   |   |   |── HomeNavi
+    │   │   ├   ├── ItemsInList.tsx
+    │   │   │   ├── ItemsPage.tsx
+    │   │   │   └── ...
+    │   │   |── interfaces
+    │   │   │   ├── Item.ts
+    │   │   │   ├── ShoppingList.ts 
+    │   │   │   └── ...
     │   │   ├── pages
     │   │   │   ├── Items.tsx
     │   │   │   ├── ShoppingLists.tsx
     │   │   │   └── ...
+    │   │   ├── services
+    │   │   │   ├── ItemService.ts
+    │   │   │   ├── ShoppingListService.ts
+    │   │   │   └── ...
+    │   │   ├──Styles
+    │   │   │   ├── AllFavourtieItems.css
+    │   │   │   ├── Home.css
+    │   │   │   └── ItemFormularStyles.css
+    │   │   │   └── ItemPasgesStyles.css
+    │   │   │   └── ListFormularStyles.css
+    │   │   │   └── Navigation.css
+    │   │   │   └── Root.css
+    │   │   ├── App.css
     │   │   ├── App.tsx
     │   │   ├── index.tsx
     │   │   └── ...
@@ -91,34 +109,37 @@ Als Webserver wird Express genutzt. Die Daten sind in einer PostgreSQL Datenbank
     │   ├── .prettierrc
     │   ├── package.json
     │   └── tsconfig.json
-    ├── .gitignore
-    ├── README.md
-    └── ...
 
 ## Routenstruktur
 
     Backend:
-    - `GET /ShoppingLists/AllShoppingLists`: Ruft eine Liste aller Einkaufslisten ab.
-    - `POST /ShoppingLists/NewShoppingList`: Erstellt eine neue Einkaufsliste.
-    - `DELETE /ShoppingLists/:listName`    : Löscht eine bestimmte Einkaufsliste.
-    - `POST /ShoppingLists/ItemToShoppingList/:listName`: Fügt einen Artikel zu einer bestimmten Einkaufsliste hinzu.
-    - 'Delete /ShoppingLists/ItemFromShoppingList/:listName/:itemName': Entfernt einen Artikel von einer bestimmten Einkaufsliste.
-    - `PUT /ShoppingLists/DeleteItemFromShoppingList/:listName/:itemName`: Entfernt einen Artikel von einer bestimmten Einkaufsliste.
-    - `GET /ShoppingLists/ShoppingListByName/:listName`: Ruft eine Einkaufsliste anhand ihres Namens ab.
-    - `GET /ShoppingLists/ShoppingListByDescription/:listDescription`: Ruft Einkaufsliste anhand ihrer Beschreibung ab.
-    - `PUT /ShoppingLists/ShoppingList/:listName`: Aktualisiert den Namen einer bestimmten Einkaufsliste.
-    - `GET /ShoppingLists/ShoppingListWithItem/:itemName`: Ruft Einkaufsliste  mit bestimmten Artikel ab.   
-    - `GET /ShoppingLists/LastUpdatedShoppingList`: Freestyle Task 1. Sortiert Einkaufsliste nach dem letzten Änderungsdatum.
-   
-    - `GET /items/PopularItems`: Freestyle Task 1. Ruft eine Liste der häufig gekauften anhad ihrer Menge ab.
-    - `GET /items/AllFavoriteItems`: Freestyle Task 1. Ruft eine Liste der favorisierten Artikeln ab.
-    - `GET /items/:itemName`: Sucht nach Artikeln basierend auf ihrem Namen.
-    - `GET /items/ItemByDescription/:itemDescription`: Sucht nach Artikeln basierend auf ihrer Beschreibung.
-    - `PUT /items/Favorite/:itemName`: Markiert einen Artikel als Favorit oder Wenn einen Favoiten Artikel als nicht Favorite .
-    - 'PUT /items/:itemName': Aktualisiert einen bestimmten Artikel.
-    - 'POST /items/NewItem': Erstellt einen neuen Artikel.
-    - 'GET /items/AllItems': Ruft eine Liste aller Artikel ab.
-    - `DELETE /items/:itemName`: Löscht einen bestimmten Artikel.
+
+    GET /AllItems
+    POST /NewItem
+    DELETE /:itemId
+    PUT /:itemId
+    PUT /Favorite/:itemId
+    GET /AllFavouriteItems
+    POST /:itemId
+
+
+    Frontend:
+
+    GET /items
+    GET /items/:id
+    POST /items
+    PUT /items/:id
+    DELETE /items/:id
+    GET /shopping-lists
+    GET /shopping-lists/:id
+    POST /shopping-lists
+    PUT /shopping-lists/:id
+    DELETE /shopping-lists/:id
+    GET /shopping-lists/:id/items
+    POST /shopping-lists/:id/items
+    DELETE /shopping-lists/:id/items/:itemId
+    GET /items/search
+    GET /shopping-lists/search
 
 ## Aufsetzen der Applikation
 
@@ -155,6 +176,7 @@ Als Webserver wird Express genutzt. Die Daten sind in einer PostgreSQL Datenbank
     3. Installieren Sie die notwendigen Abhängigkeiten: `npm install`
     4. Starten Sie die Anwendung: `npm run dev`
 
-#
+
+
 
     

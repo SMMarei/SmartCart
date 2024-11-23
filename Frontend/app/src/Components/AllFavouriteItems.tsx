@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { getFavouriteItems } from "../Services/ItemService";
 import "../Style/AllFavoriteItems.css";
 import { Item } from "../interface/Item.tsx";
+import Navigation from "./Navigation.tsx";
 
 export const AllFavouriteItems: React.FC = () => {
   const [favoriteItems, setFavoriteItems] = useState<Item[]>([]);
@@ -30,23 +31,26 @@ export const AllFavouriteItems: React.FC = () => {
   if (error) return <p>Fehler: {error}</p>;
 
   return (
-    <div className="favorite-items-container">
-      <h2>Ihre Favouritenartikel</h2>
-      <ul className="favorite-items-list">
-        {favoriteItems.map((item) => (
-          <li key={item.itemId} className="favorite-item">
-            <img
-              src={item.image || "../assets/default.png"}
-              alt={item.itemName}
-              className="favorite-item-image"
-            />
-            <div className="favorite-item-details">
-              <h3>{item.itemName}</h3>
-              <p>{item.itemDescription}</p>
-            </div>
-          </li>
-        ))}
-      </ul>
+    <div>
+      <Navigation />
+      <div className="favorite-items-container">
+        <h2>Ihre Favouritenartikel</h2>
+        <ul className="favorite-items-list">
+          {favoriteItems.map((item) => (
+            <li key={item.itemId} className="favorite-item">
+              <img
+                src={item.image || "./src/assets/default.png"}
+                alt={item.itemName}
+                className="favorite-item-image"
+              />
+              <div className="favorite-item-details">
+                <h3>{item.itemName}</h3>
+                <p>{item.itemDescription}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 };

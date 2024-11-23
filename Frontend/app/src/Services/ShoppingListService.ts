@@ -38,7 +38,6 @@ export const deleteShoppingList = async (id: string) => {
     return response.json();
 };
 
-
 export const EditShoppingList = async (id: string,
                                        data: { listName: string, listDescription: string }) => {
     const response = await fetch(`http://localhost:4000/ShoppingLists/ShoppingList/${id}`, {
@@ -53,6 +52,7 @@ export const EditShoppingList = async (id: string,
     }
     return response.json();
 }
+
 export const addItemToShoppingList = async (
     shoppingListId: string,
     itemData: { nameOfItem: string; description: string; quantity: number },
@@ -72,6 +72,7 @@ export const addItemToShoppingList = async (
     }
     return response.json();
 };
+
 export const deleteItemFromShoppingList = async (listId: string, itemName: string) => {
     const response = await fetch(
         `http://localhost:4000/ShoppingLists/ItemFromShoppingList/${listId}/${itemName}`, // listId verwenden
@@ -90,6 +91,5 @@ export const deleteItemFromShoppingList = async (listId: string, itemName: strin
 
     return response.json();
 };
-
 
 // ViewAllShoppingLists.tsx

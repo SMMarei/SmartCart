@@ -14,7 +14,6 @@ import { ShoppingListService } from "../Services/ShoppingListService";
 const router = Router({ mergeParams: true });
 const shoppingListService = new ShoppingListService();
 
-// Display all shopping lists, including linked items
 router.get("/AllShoppingList", async (req: Request, res: Response) => {
   try {
     const em = DI.orm.em.fork();
@@ -28,7 +27,6 @@ router.get("/AllShoppingList", async (req: Request, res: Response) => {
   }
 });
 
-// Create a new shopping list
 router.post("/NewShoppingList", async (req: Request, res: Response) => {
   try {
     const newList = await shoppingListService.createShoppingList(req.body); // 'await' hinzugefügt
@@ -47,7 +45,6 @@ router.post("/NewShoppingList", async (req: Request, res: Response) => {
   }
 });
 
-// Delete a shopping list
 router.delete("/:id", async (req: Request, res: Response) => {
   try {
     const shoppingList = await shoppingListService.deleteShoppingList(
@@ -90,7 +87,6 @@ router.get("/ShoppingList/search", async (req: Request, res: any) => {
   }
 });
 
-// Update a shopping list Name and Description
 router.put("/ShoppingList/:id", async (req: Request, res: any) => {
   try {
     const updatedList = await shoppingListService.updateNameShoppingList(
@@ -107,7 +103,6 @@ router.put("/ShoppingList/:id", async (req: Request, res: any) => {
   }
 });
 
-// Route für das Abrufen von Einkaufslisten mit einem bestimmten Item
 router.get(
   "/ShoppingListWithItem/:itemName",
   async (req: Request, res: any) => {
@@ -135,7 +130,6 @@ router.get(
   },
 );
 
-// BackendRouter:
 router.post(
   "/NewItemToShoppingList/:id",
   async (req: Request, res: Response) => {
@@ -214,4 +208,22 @@ router.get("/LastUpdatedShoppingList", async (req: Request, res: any) => {
     }
   }
 });
+
+// FreeStyle #2:
+// Route zum Abrufen der Produktdaten
+router.get("/api/products", async (req, res) => {
+  try {
+    const response = await fetch("https://fakestoreapi.com/products");
+    if (!response.ok) {
+      throw new Error("Fehler beim Abrufen der Daten");
+    }
+
+    const data = await response.json();
+    res.json(data); // Weiterleitung der Daten an das Frontend
+  } catch (error) {
+    console.error("API-Fehler:", error);
+    res.status(500).json({ error: "Fehler beim Abrufen der Produktdaten" });
+  }
+});
+
 export const ShoppingListController = router;
