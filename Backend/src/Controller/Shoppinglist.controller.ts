@@ -211,15 +211,18 @@ router.get("/LastUpdatedShoppingList", async (req: Request, res: any) => {
 
 // FreeStyle #2:
 // Route zum Abrufen der Produktdaten
-router.get("/api/products", async (req, res) => {
+router.get("/api/:prodName", async (req, res) => {
   try {
-    const response = await fetch("https://fakestoreapi.com/products");
+    let requestProbe = req.params.prodName;
+    console.log(requestProbe);
+    const response = await fetch(
+      `https://www.themealdb.com/api/json/v1/1/search.php?s=${requestProbe}`,
+    );
     if (!response.ok) {
       throw new Error("Fehler beim Abrufen der Daten");
     }
-
     const data = await response.json();
-    res.json(data); // Weiterleitung der Daten an das Frontend
+    res.json({ instructions: data.meals[0].strInstructions }); // Weiterleitung der Daten an das Frontend
   } catch (error) {
     console.error("API-Fehler:", error);
     res.status(500).json({ error: "Fehler beim Abrufen der Produktdaten" });

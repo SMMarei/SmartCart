@@ -1,0 +1,503 @@
+{
+	"info": {
+		"_postman_id": "4310a2cf-c36a-495a-b892-305b3ccc272f",
+		"name": "FWE-WI24-25",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "24059054"
+	},
+	"item": [
+		{
+			"name": "Einkaufsliste Anfragen",
+			"item": [
+				{
+					"name": "DeleteItemFromShoppingList",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"listName\": \"Lebensmittel 2\",\r\n    \"itemName\": \"Apfel\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:4000/ShoppingLists/ItemFromShoppingList/214521b8-c673-4d3a-9ee0-a35a033a0593/Mützen",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"ShoppingLists",
+								"ItemFromShoppingList",
+								"214521b8-c673-4d3a-9ee0-a35a033a0593",
+								"Mützen"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetShoppingListWithItem",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:4000/ShoppingLists/ShoppingListWithItem/Apfel",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"ShoppingLists",
+								"ShoppingListWithItem",
+								"Apfel"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "addItemToShoppingList",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{  \"nameOfItem\": \"Mützen\", \r\n    \"description\": \"Mützen für June und Mädchen\",\r\n    \"quantity\": 2\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:4000/ShoppingLists/NewItemToShoppingList/214521b8-c673-4d3a-9ee0-a35a033a0593",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"ShoppingLists",
+								"NewItemToShoppingList",
+								"214521b8-c673-4d3a-9ee0-a35a033a0593"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetAllShoppingLists",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:4000/ShoppingLists/AllShoppingList",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"ShoppingLists",
+								"AllShoppingList"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CreateShoppingList",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"listName\": \"Milch Produkte\",\r\n    \"listDescription\": \"Liste für Einkaufen von Milch Produkten\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:4000/ShoppingLists/NewShoppingList",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"ShoppingLists",
+								"NewShoppingList"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "SearchShopingListByNameDescription",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:4000/ShoppingLists/ShoppingList/search?query=Lebensmittel",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"ShoppingLists",
+								"ShoppingList",
+								"search"
+							],
+							"query": [
+								{
+									"key": "query",
+									"value": "Lebensmittel"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "SortLastUpdatedShoppingList",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:4000/ShoppingLists/LastUpdatedShoppingList",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"ShoppingLists",
+								"LastUpdatedShoppingList"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UpdateListName",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"listName\": \"Wasser und Getränke\" ,\r\n    \"listDescription\": \"Wasser und Getränke\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:4000/ShoppingLists/ShoppingList/fcf469e2-72c3-4591-8324-872bc1227b30",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"ShoppingLists",
+								"ShoppingList",
+								"fcf469e2-72c3-4591-8324-872bc1227b30"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteShoppingList",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:4000/ShoppingLists/ecfa60b2-ac32-489b-a69c-7389022a4673",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"ShoppingLists",
+								"ecfa60b2-ac32-489b-a69c-7389022a4673"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "ArtikelAnfragen",
+			"item": [
+				{
+					"name": "GetAllItems",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:4000/Items/AllItems",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"Items",
+								"AllItems"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CreatItem",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"itemName\": \"Toast\", \r\n    \"itemDescription\": \"Brot\",\r\n    \"image\": \"\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:4000/Items/NewItem",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"Items",
+								"NewItem"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DeleteItem",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:4000/Items/bf4edc02-c5ee-4162-b96a-52b89be6285f",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"Items",
+								"bf4edc02-c5ee-4162-b96a-52b89be6285f"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ChangeItemName",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"itemName\": \"KornBrot\",\r\n    \"itemDescription\": \"Bort und Gerteide\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:4000/Items/8123511e-4c32-4dc2-92ae-8a37f0382bf1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"Items",
+								"8123511e-4c32-4dc2-92ae-8a37f0382bf1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ToggleFavorite",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:4000/Items/Favorite/8123511e-4c32-4dc2-92ae-8a37f0382bf1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"Items",
+								"Favorite",
+								"8123511e-4c32-4dc2-92ae-8a37f0382bf1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetFavoritesItems",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:4000/Items/AllFavouriteItems",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"Items",
+								"AllFavouriteItems"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "addItemToList",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"itemId\": \"8123511e-4c32-4dc2-92ae-8a37f0382bf1\",\r\n    \"shoppingListId\": \"214521b8-c673-4d3a-9ee0-a35a033a0593\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:4000/Items/8123511e-4c32-4dc2-92ae-8a37f0382bf1",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"Items",
+								"8123511e-4c32-4dc2-92ae-8a37f0382bf1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Freestyle2",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:4000/ShoppingLists/api/pizza",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "4000",
+							"path": [
+								"ShoppingLists",
+								"api",
+								"pizza"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

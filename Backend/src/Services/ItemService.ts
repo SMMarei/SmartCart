@@ -58,11 +58,6 @@ export class ItemService {
     return em.find(Item, { itemName: { $like: `%${itemName}%` } });
   }
 
-  async searchItemByDescription(description: string) {
-    const em = DI.orm.em.fork();
-    return em.find(Item, { itemDescription: { $like: `%${description}%` } });
-  }
-
   async updateItemName(itemId: string, data: { itemId: string }) {
     const em = DI.orm.em.fork();
     const validatedData = ItemSchema.parse(data);

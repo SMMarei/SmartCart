@@ -57,7 +57,6 @@ export class ShoppingListService {
     );
     if (!list) throw new Error("Shopping list not found");
 
-    // Überprüfen, ob die Liste Artikel enthält
     if (list.items.length > 0) {
       throw new Error(
         "Shopping list contains items. Please remove the items before deleting the list",
@@ -69,16 +68,16 @@ export class ShoppingListService {
   }
 
   async searchShoppingLists(query: string): Promise<ShoppingList[]> {
-    const em = DI.orm.em.fork(); // Neuer Entity Manager
+    const em = DI.orm.em.fork();
     return em.find(
       ShoppingList,
       {
         $or: [
-          { listName: { $like: `%${query}%` } }, // Suche nach Listenname
-          { listDescription: { $like: `%${query}%` } }, // Oder Suche nach Beschreibung
+          { listName: { $like: `%${query}%` } },
+          { listDescription: { $like: `%${query}%` } },
         ],
       },
-      { populate: ["items"] }, // Lade verbundene Items
+      { populate: ["items"] },
     );
   }
 

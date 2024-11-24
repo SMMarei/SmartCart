@@ -65,9 +65,9 @@ router.put("/:itemId", async (req: Request, res: any) => {
       req.params.itemId,
       req.body,
     );
-    res
-      .status(200)
-      .json({ message: `Item name changed to ${updatedItem.itemName}` });
+    res.status(200).json({
+      message: `Item name changed to ${updatedItem.itemName} and Item Description changed to ${updatedItem.itemDescription}`,
+    });
   } catch (error) {
     handleValidationError(res, error as Error, "Validation error");
   }
@@ -95,7 +95,7 @@ router.put("/Favorite/:itemId", async (req: Request, res: any) => {
   try {
     const item = await itemService.toggleItemToFavorite(req.params.itemId);
     res.status(200).json({
-      message: `Item ${item.itemId} is now ${item.isFavorite ? "a favorite" : "not a favorite"}`,
+      message: `Item  with Id: ${item.itemId} , its name ${item.itemName} is now ${item.isFavorite ? "a favorite" : "not a favorite"}`,
     });
   } catch (error) {
     handleError(res, error as Error, "Error toggling favorite status");
