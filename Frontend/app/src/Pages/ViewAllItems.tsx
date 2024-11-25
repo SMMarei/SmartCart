@@ -28,7 +28,6 @@ export const ViewAllItems = () => {
   const menuRef = useRef<HTMLDivElement | null>(null);
 
   const navigate = useNavigate();
-  // Fetching items from the server
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -96,7 +95,7 @@ export const ViewAllItems = () => {
       setItems(previousItems);
     }
   };
-  // Fügen Sie diese Methode zu ViewAllItems hinzu
+  // Forward to the shopping list page with the item
   const goToShoppingListsPage = (item: Item) => {
     navigate("/ShoppingLists", { state: { item } });
   };
@@ -120,7 +119,6 @@ export const ViewAllItems = () => {
         setIsDeleteDialogOpen(false);
         toast.success("Artikel erfolgreich gelöscht!");
       } catch (error) {
-        // console.error("Fehler beim Löschen des Artikels:", error); // Debugging
         if (
           error instanceof Error &&
           error.message.includes("associated with a shopping list")
@@ -158,13 +156,13 @@ export const ViewAllItems = () => {
   const handleEditSubmit = async () => {
     if (itemToEdit) {
       try {
-        // Führe die Aktualisierung durch
+        // update item name and description
         await editItemName(itemToEdit.itemId, {
           itemName: newItemName,
           itemDescription: newItemDescription,
         });
 
-        // Aktualisiere den State manuell mit den neuen Werten
+        // update  state manually without fetching all items again
         setItems((prevItems) =>
           prevItems.map((item) =>
             item.itemId === itemToEdit.itemId
@@ -189,7 +187,7 @@ export const ViewAllItems = () => {
   };
 
   const handleAddToShoppingList = (item: Item) => {
-    goToShoppingListsPage(item); // Weiterleitung zur Auswahlseite
+    goToShoppingListsPage(item); // forward to shopping list page
   };
 
   if (loading) return <p>Daten werden geladen...</p>;
@@ -244,7 +242,7 @@ export const ViewAllItems = () => {
               <FontAwesomeIcon
                 icon={faStar}
                 style={{
-                  color: item.isFavorite ? "gold" : "gray", // Sternfarbe entsprechend dem Status
+                  color: item.isFavorite ? "gold" : "gray", // star color based on favorite status
                   fontSize: "24px",
                   cursor: "pointer",
                 }}

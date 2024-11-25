@@ -40,15 +40,12 @@ export const initializeServer = async () => {
   DI.itemRepository = em.getRepository(Item);
   DI.shoppingListRepository = em.getRepository(ShoppingList);
 
-  // Middleware und Routen hinzufügen
   app.use(express.json());
   app.use((req, res, next) => RequestContext.create(DI.orm.em, next));
 
-  // Routen für Items und Shoppinglisten verwenden
   app.use("/Items", itemController);
   app.use("/ShoppingLists", ShoppingListController);
 
-  // Server start
   DI.server = app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
   });

@@ -1,4 +1,4 @@
-/* Hintergrund und Container */
+
 .home-container {
     display: flex;
     flex-direction: column;
@@ -35,7 +35,6 @@ p {
     color: darkblue;
 }
 
-/* Navigation Buttons */
 .navigation-buttons {
     display: flex;
     flex-wrap: wrap;
@@ -54,7 +53,7 @@ p {
     cursor: pointer;
     transition: transform 0.2s, background-color 0.2s;
     width: 220px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 1px 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .navigation-buttons button:hover {
@@ -66,7 +65,6 @@ p {
     background-color: darkturquoise;
 }
 
-/* Responsives Design */
 @media (max-width: 768px) {
     .hero-section h1 {
         font-size: 2em;

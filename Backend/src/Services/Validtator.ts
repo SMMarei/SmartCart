@@ -1,7 +1,6 @@
 import { z } from "zod";
 
-// Regex für erlaubte Zeichen
-const nameAndDescriptionRegex = /^[a-zA-Z0-9\s.,Ö, ö,Ä, ä, Ü, ü,ß,-]+$/;
+const nameAndDescriptionRegex = /^[a-zA-Z0-9\s.,Ö öÄäÜüß-]+$/;
 
 // Item-Schema-Definition
 export const ItemSchema = z.object({
@@ -34,7 +33,7 @@ export const ShoppingListSchema = z.object({
     }),
 });
 
-// ShoppingListItem-Schema-Definition, mit `listName` und `item` optional
+// ShoppingListItem-Schema-Definition, with `listName` und `item` optional
 export const ShoppingListItemSchema = z.object({
   listName: z
     .string()

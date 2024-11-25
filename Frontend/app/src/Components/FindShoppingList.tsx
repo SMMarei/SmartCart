@@ -19,14 +19,14 @@ export const FindShoppingList = () => {
     try {
       let response;
       if (searchType === "nameOrDescription") {
-        // Suche nach Listenname oder Beschreibung
+        // search for lists with name or description
         response = await fetch(
           `http://localhost:4000/ShoppingLists/ShoppingList/search?query=${encodeURIComponent(
             searchQuery,
           )}`,
         );
       } else {
-        // Suche nach Artikelname
+        // search for items in lists with item name
         response = await fetch(
           `http://localhost:4000/ShoppingLists/ShoppingListWithItem/${encodeURIComponent(
             searchQuery,

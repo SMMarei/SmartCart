@@ -1,4 +1,3 @@
-// pages/CreateShoppingList.tsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../Style/ListFormularStyle.css";
@@ -7,12 +6,12 @@ import { toast, ToastContainer } from "react-toastify";
 import Navigation from "./Navigation.tsx";
 
 const validateItemName = (name: string) => {
-  const regex = /^[a-zA-Z0-9\s.,ÖöÄäÜüß,-]*$/; // Nur Buchstaben, Zahlen und Leerzeichen erlauben
+  const regex = /^[a-zA-Z0-9\s.,ÖöÄäÜüß-]*$/; // alphabet, numbers, space and simple punctuation
   return regex.test(name);
 };
 
 const validateDescription = (description: string) => {
-  const regex = /^[a-zA-Z0-9\s.,ÖöÄäÜüß!?-]*$/; // Buchstaben, Zahlen, Leerzeichen und einfache Satzzeichen
+  const regex = /^[a-zA-Z0-9\s.,ÖöÄäÜüß!?-]*$/; // alphabet, numbers, space and simple punctuation
   return regex.test(description);
 };
 
@@ -50,8 +49,8 @@ const AddShoppingList: React.FC = () => {
         shoppingListData.listDescription,
       );
       navigate("/ViewAllShoppingLists");
-    } catch (error: any) {
-      // Fehlerbehandlung bei doppelt vorhandenem Artikel
+    } catch (error: unknown) {
+      // error handling for duplicate list
       if (error instanceof Error) {
         if (error.message.includes("already exists")) {
           toast.error(error.message);

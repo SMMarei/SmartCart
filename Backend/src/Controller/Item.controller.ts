@@ -111,7 +111,7 @@ router.get("/AllFavouriteItems", async (req: Request, res: any) => {
     }
     res.status(200).json(items);
   } catch (error) {
-    console.error("Error fetching favorite items:", error); // Debug-Ausgabe
+    console.error("Error fetching favorite items:", error); //  error output for debugging
     handleError(res, error as Error, "Error fetching favorite items");
   }
 });

@@ -17,8 +17,8 @@ const ViewAllShoppingLists = () => {
   const [shoppingLists, setShoppingLists] = useState<ShoppingList[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [expandedListId, setExpandedListId] = useState<string | null>(null); // Zustand für aufgeklappte Listen
-  const [editMode, setEditMode] = useState<string | null>(null); // Zustand für Bearbeiten-Modus
+  const [expandedListId, setExpandedListId] = useState<string | null>(null);
+  const [editMode, setEditMode] = useState<string | null>(null);
   const [editData, setEditData] = useState({
     listName: "",
     listDescription: "",
@@ -26,7 +26,7 @@ const ViewAllShoppingLists = () => {
 
   const navigate = useNavigate();
 
-  // Daten abrufen
+  // data fetching
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -34,12 +34,12 @@ const ViewAllShoppingLists = () => {
           "http://localhost:4000/ShoppingLists/LastUpdatedShoppingList",
         );
         if (!response.ok) {
-          throw new Error(`Fehler ${response.status}: ${response.statusText}`);
+          throw new Error(`Error ${response.status}: ${response.statusText}`);
         }
         const data: ShoppingList[] = await response.json();
         setShoppingLists(data);
       } catch (error) {
-        setError(error instanceof Error ? error.message : "Unbekannter Fehler");
+        setError(error instanceof Error ? error.message : "Unknown error");
       } finally {
         setLoading(false);
       }
@@ -48,12 +48,12 @@ const ViewAllShoppingLists = () => {
     fetchData();
   }, []);
 
-  // Liste ein- oder ausklappen
+  // toggle list
   const toggleList = (listId: string) => {
     setExpandedListId((prev) => (prev === listId ? null : listId));
   };
 
-  // Liste löschen
+  // delete list
   const handleDelete = async (listId: string) => {
     try {
       await deleteShoppingList(listId);
@@ -76,7 +76,7 @@ const ViewAllShoppingLists = () => {
     }
   };
 
-  // Bearbeiten starten
+  // changes edit/ start edit mode
   const handleEditClick = (list: ShoppingList) => {
     setEditMode(list.id);
     setEditData({
@@ -85,7 +85,7 @@ const ViewAllShoppingLists = () => {
     });
   };
 
-  // Änderungen speichern
+  // changes save
   const handleEditSave = async (listId: string) => {
     try {
       const response = await EditShoppingList(listId, editData);
@@ -107,13 +107,13 @@ const ViewAllShoppingLists = () => {
     }
   };
 
-  // Bearbeiten abbrechen
+  // changes cancel
   const handleEditCancel = () => {
     setEditMode(null);
     setEditData({ listName: "", listDescription: "" });
   };
 
-  // Navigieren zur Artikel-Seite
+  // navigate to add item page
   const handleAddItemClick = (listId: string) => {
     navigate(`/ItemsPage/${listId}`);
   };

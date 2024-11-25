@@ -7,9 +7,9 @@ import Navigation from "./Navigation.tsx";
 
 const DEFAULT_IMAGE_URL = "./src/assets/default.png";
 
-// Validierungsfunktionen
+// Validation functions
 const validateItemName = (name: string) => {
-  const regex = /^[a-zA-Z0-9\s.,ÖöÄäÜüß,-]*$/; // Nur Buchstaben, Zahlen und Leerzeichen erlauben
+  const regex = /^[a-zA-Z0-9\s.,ÖöÄäÜüß-]*$/; // Nur Buchstaben, Zahlen und Leerzeichen erlauben
   return regex.test(name);
 };
 
@@ -18,7 +18,6 @@ const validateDescription = (description: string) => {
   return regex.test(description);
 };
 
-// Funktion zum Validieren der Bild-URL oder Base64
 const validateImageUrl = (url: string) => {
   const regex = /\.(jpg|jpeg|png|gif|avif)$/i;
   return !url || regex.test(url); // Wenn keine URL angegeben, wird sie als gültig betrachtet
@@ -32,16 +31,16 @@ const AddItem: React.FC = () => {
     image: "",
   });
   const [error, setError] = useState<string | null>(null);
-  // Eingabeänderung Handler
+  // input change Handler
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setItemData({ ...itemData, [name]: value });
   };
-  // Artikel hinzufügen
+  // add item Handler
   const handleAddItem = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validierung der Eingaben
+    // Validate input data
     if (!validateItemName(itemData.itemName)) {
       setError(
         "Der Artikelnamen darf nur Buchstaben, Zahlen und Leerzeichen enthalten.",
@@ -62,9 +61,9 @@ const AddItem: React.FC = () => {
 
     try {
       await addItem(itemData.itemName, itemData.itemDescription, imageUrl);
-      navigate("/ViewAllItems"); // Erfolgreich zum Ansicht der Artikel weiterleiten
+      navigate("/ViewAllItems");
     } catch (error: unknown) {
-      // Fehlerbehandlung bei doppelt vorhandenem Artikel
+      //Error handling for double item name
       if (error instanceof Error) {
         if (error.message.includes("already exists")) {
           toast.error(error.message);

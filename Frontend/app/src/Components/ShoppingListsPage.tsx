@@ -1,17 +1,16 @@
-// ShoppingListsPage.tsx
-
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ShoppingList } from "../interface/ShoppingList.tsx";
 import { getAllShoppingLists } from "../Services/ShoppingListService.ts";
-import { addItemToShoppingList } from "../Services/ItemService.ts"; // Importieren der angepassten Funktion
+import { addItemToShoppingList } from "../Services/ItemService.ts";
+import Navigation from "./Navigation.tsx";
 
 export const ShoppingListsPage = () => {
   const [shoppingLists, setShoppingLists] = useState<ShoppingList[]>([]);
   const [selectedLists, setSelectedLists] = useState<string[]>([]);
   const location = useLocation();
   const navigate = useNavigate();
-  const selectedItem = location.state?.item; // Erwartet, dass item ein { itemId, ... } enthält
+  const selectedItem = location.state?.item; // Get the selected item from the location state
 
   useEffect(() => {
     const fetchShoppingLists = async () => {
@@ -48,8 +47,8 @@ export const ShoppingListsPage = () => {
         );
 
         await addItemToShoppingList(
-          selectedItem.itemId, // Nur itemId übergeben
-          listId, // shoppingListId übergeben
+          selectedItem.itemId, // only  itemId is passed
+          listId, // shoppingListId is passed
         );
       }
 
@@ -61,24 +60,50 @@ export const ShoppingListsPage = () => {
   };
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h2>Wählen Sie die Einkaufsliste(n) aus für {selectedItem?.itemName}</h2>
-      <form>
-        {shoppingLists.map((list) => (
-          <div key={list.id} style={{ marginBottom: "10px" }}>
-            <input
-              type="checkbox"
-              id={list.id}
-              checked={selectedLists.includes(list.id)}
-              onChange={() => handleCheckboxChange(list.id)}
-            />
-            <label htmlFor={list.id}>{list.listName}</label>
-          </div>
-        ))}
-      </form>
-      <button onClick={handleSaveSelection} style={{ marginTop: "20px" }}>
-        Auswahl speichern
-      </button>
+    <div>
+      <Navigation />
+      <div
+        style={{
+          padding: "20px",
+          marginTop: "20px",
+          marginLeft: "20px",
+          marginRight: "20px",
+          backgroundColor: "whitesmoke",
+          borderRadius: "10px",
+          border: "1px solid darkturquoise",
+        }}
+      >
+        <h2>
+          Wählen Sie die Einkaufsliste(n) aus für {selectedItem?.itemName}
+        </h2>
+        <form>
+          {shoppingLists.map((list) => (
+            <div key={list.id} style={{ marginBottom: "10px" }}>
+              <input
+                type="checkbox"
+                id={list.id}
+                checked={selectedLists.includes(list.id)}
+                onChange={() => handleCheckboxChange(list.id)}
+              />
+              <label htmlFor={list.id}>{list.listName}</label>
+            </div>
+          ))}
+        </form>
+        <button
+          onClick={handleSaveSelection}
+          style={{
+            marginTop: "20px",
+            padding: "10px 20px",
+            backgroundColor: "green",
+            color: "white",
+            border: "none",
+            borderRadius: "5px",
+            cursor: "pointer",
+          }}
+        >
+          Auswahl speichern
+        </button>
+      </div>
     </div>
   );
 };

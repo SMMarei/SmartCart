@@ -6,7 +6,7 @@ export function handleError(
   error: Error,
   message = "An error occurred",
 ) {
-  console.error(message, error); // Fehler in der Konsole ausgeben
+  console.error(message, error); //  error output for debugging
   res.status(500).json({ error: message });
 }
 
@@ -15,12 +15,10 @@ export function handleValidationError(
   error: Error,
   message = "Validation failed",
 ) {
-  console.error(message, error); // Fehler in der Konsole ausgeben
+  console.error(message, error); //  error output for debugging
 
-  // Zod-spezifische Fehlerstrukturierung
   const zodError = error instanceof z.ZodError ? error.format() : error;
 
-  // Antwort an den Client
   res.status(400).json({ error: message, details: zodError });
 }
 

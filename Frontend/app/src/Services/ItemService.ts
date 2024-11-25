@@ -1,5 +1,3 @@
-//  Frontend ItemService.ts
-
 export const getItems = async () => {
   const response = await fetch("http://localhost:4000/Items/AllItems", {
     method: "GET",
@@ -36,7 +34,6 @@ export const addItem = async (
   return await response.json();
 };
 
-// Funktion zum Löschen eines Artikels
 export const deleteItem = async (itemId: string) => {
   const response = await fetch(`http://localhost:4000/Items/${itemId}`, {
     method: "DELETE",
@@ -49,7 +46,7 @@ export const deleteItem = async (itemId: string) => {
     throw new Error(errorData.error || "Fehler beim Löschen des Artikels");
   }
 
-  return itemId; // Rückgabe der ID des gelöschten Artikels
+  return itemId; // backend returns the ID of the deleted item
 };
 
 export const editItemName = async (
@@ -78,7 +75,7 @@ export const addItemToShoppingList = async (
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ shoppingListId }), // Übergibt shoppingListId im Body
+    body: JSON.stringify({ shoppingListId }), // pass the shopping list ID from the frontend
   });
 
   if (!response.ok) {

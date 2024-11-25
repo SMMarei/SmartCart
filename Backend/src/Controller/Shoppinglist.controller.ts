@@ -120,7 +120,7 @@ router.get(
 
       return res.status(200).json(shoppingLists);
     } catch (error) {
-      console.error("Error fetching shopping lists with item:", error);
+      console.error("Error fetching shopping lists with item:", error); // Debug-ouptut
       return handleError(
         res,
         error as Error,
@@ -150,11 +150,10 @@ router.post(
   },
 );
 
-// Delete item from ShoppingList
 router.delete(
   "/ItemFromShoppingList/:listId/:itemName",
   async (req: Request, res: any) => {
-    const { listId, itemName } = req.params; // Lesen der Parameter aus der URL
+    const { listId, itemName } = req.params;
     console.log(listId, itemName);
 
     try {
@@ -173,11 +172,10 @@ router.delete(
   },
 );
 
-// Get Items from ShoppingList
 router.get("/ItemsFromShoppingList/:listId", async (req: Request, res: any) => {
   try {
     const items = await shoppingListService.getItemsFromShoppingList(
-      req.params.listId, // listId statt listName
+      req.params.listId,
     );
     return res.status(200).json(items);
   } catch (error) {
@@ -210,22 +208,20 @@ router.get("/LastUpdatedShoppingList", async (req: Request, res: any) => {
 });
 
 // FreeStyle #2:
-// Route zum Abrufen der Produktdaten
 router.get("/api/:prodName", async (req, res) => {
   try {
     let requestProbe = req.params.prodName;
-    console.log(requestProbe);
     const response = await fetch(
       `https://www.themealdb.com/api/json/v1/1/search.php?s=${requestProbe}`,
     );
     if (!response.ok) {
-      throw new Error("Fehler beim Abrufen der Daten");
+      throw new Error("An error occurred while fetching the product data");
     }
     const data = await response.json();
-    res.json({ instructions: data.meals[0].strInstructions }); // Weiterleitung der Daten an das Frontend
+    res.json({ instructions: data.meals[0].strInstructions });
   } catch (error) {
-    console.error("API-Fehler:", error);
-    res.status(500).json({ error: "Fehler beim Abrufen der Produktdaten" });
+    console.error("API-Error:", error);
+    res.status(500).json({ error: "An error occurred while loading data" });
   }
 });
 

@@ -4,6 +4,7 @@ import { getItems } from "../Services/ItemService.ts";
 import { Item } from "../interface/Item.tsx";
 import { addItemToShoppingList } from "../Services/ShoppingListService.ts";
 import "../Style/ItemPagesStyle.css";
+import Navigation from "./Navigation.tsx";
 
 const ItemsPage: React.FC = () => {
   const { shoppingListId } = useParams<{ shoppingListId: string }>();
@@ -19,8 +20,8 @@ const ItemsPage: React.FC = () => {
       try {
         const fetchedItems = await getItems();
         setItems(fetchedItems);
-      } catch (error) {
-        setError("Fehler beim Laden der Artikel.");
+      } catch (error: unknown) {
+        setError("Fehler beim Laden der Artikel." + error);
       }
     };
     fetchItems();
@@ -48,34 +49,53 @@ const ItemsPage: React.FC = () => {
         }
       }
       navigate("/ViewAllShoppingLists");
-    } catch (err) {
-      setError("Fehler beim Hinzufügen der Artikel zur Einkaufsliste.");
+    } catch (error: unknown) {
+      setError("Fehler beim Hinzufügen der Artikel zur Einkaufsliste." + error);
     }
   };
 
   return (
-    <div className="item-page-container">
-      <h2>Artikel zur Einkaufsliste hinzufügen</h2>
-      {error && <p className="error-message">{error}</p>}
-      <div className="items-list">
-        {items.map((item) => (
-          <div key={item.itemId} className="item-card">
-            <h3>{item.itemName}</h3>
-            <p>{item.itemDescription}</p>
-            <input
-              type="number"
-              min="0"
-              placeholder="Menge"
-              onChange={(e) =>
-                handleItemSelection(item.itemId, parseInt(e.target.value))
-              }
-            />
-          </div>
-        ))}
+    <div>
+      <Navigation />
+      <div className="item-page-container">
+        <h2>Artikel zur Einkaufsliste hinzufügen</h2>
+        {error && <p className="error-message">{error}</p>}
+        <div className="items-list">
+          {items.map((item) => (
+            <div key={item.itemId} className="item-card">
+              <h3>{item.itemName}</h3>
+              <p>{item.itemDescription}</p>
+              <input
+                type="number"
+                min="0"
+                placeholder="Menge"
+                onChange={(e) =>
+                  handleItemSelection(item.itemId, parseInt(e.target.value))
+                }
+              />
+            </div>
+          ))}
+        </div>
+        <button onClick={handleSaveSelection} className="save-button">
+          Auswahl speichern
+        </button>
+        <br />
+        <p>
+          Finden Sie den Artikel nicht? Dann{" "}
+          <span
+            onClick={() => navigate("/addItem")}
+            className="add-item-link"
+            style={{
+              cursor: "pointer",
+              color: "blue",
+              textDecoration: "underline",
+            }}
+          >
+            hier klicken
+          </span>{" "}
+          und Artikel erstellen.
+        </p>
       </div>
-      <button onClick={handleSaveSelection} className="save-button">
-        Auswahl speichern
-      </button>
     </div>
   );
 };
