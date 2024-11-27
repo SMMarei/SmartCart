@@ -2,20 +2,20 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { deleteItemFromShoppingList } from "../Services/ShoppingListService";
 import { ShoppingListItem } from "../interface/ShoppingListItem";
+import Navigation from "./Navigation.tsx";
 
 const ItemsInList = () => {
-  const { listId } = useParams<{ listId: string }>(); // Verwendet jetzt listName
+  const { listId } = useParams<{ listId: string }>();
   const [items, setItems] = useState<ShoppingListItem[]>([]); // Ensure items is always an array
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const navigate = useNavigate();
 
-  // Daten von der API abrufen
   const fetchItems = async () => {
     try {
       const response = await fetch(
-        `http://localhost:4000/ShoppingLists/ItemsFromShoppingList/${listId}`, // listName anstelle von listId
+        `http://localhost:4000/ShoppingLists/ItemsFromShoppingList/${listId}`,
       );
       if (!response.ok) {
         throw new Error("Fehler beim Abrufen der Artikel.");
@@ -41,9 +41,9 @@ const ItemsInList = () => {
 
   useEffect(() => {
     fetchItems();
-  }, [listId]);
+  }, [fetchItems, listId]);
 
-  // Auswahl-Handler
+  // select item handler
   const handleSelectItem = (itemName: string) => {
     setSelectedItems((prevSelected) =>
       prevSelected.includes(itemName)
@@ -52,16 +52,16 @@ const ItemsInList = () => {
     );
   };
 
-  // Löschen und Aktualisieren
+  // delete and update
   const deleteAndUpdate = async (itemName: string) => {
     try {
-      // Artikel löschen
-      await deleteItemFromShoppingList(listId!, itemName); // listName und itemName anstelle von listId und itemId
+      // delete item
+      await deleteItemFromShoppingList(listId!, itemName); // listName & itemName instead of  listId und itemId
 
-      // Liste aktualisieren
+      // update items
       await fetchItems();
 
-      // Auswahl zurücksetzen
+      // clear selected items
       setSelectedItems([]);
       alert("Artikel erfolgreich gelöscht!");
     } catch (error) {
@@ -70,12 +70,12 @@ const ItemsInList = () => {
     }
   };
 
-  // Lösch-Handler
+  // delete handler
   const handleDeleteSelected = async () => {
     if (selectedItems.length === 0) return;
 
     const itemsToDelete = items.filter(
-      (item) => selectedItems.includes(item.nameOfItem), // Verwende nameOfItem statt item.id
+      (item) => selectedItems.includes(item.nameOfItem), // use nameOfItem instead of item.id
     );
 
     if (
@@ -88,13 +88,13 @@ const ItemsInList = () => {
       return;
     }
 
-    // Artikel einzeln löschen und Liste aktualisieren
+    // delete item for each selected item
     for (const itemName of selectedItems) {
       await deleteAndUpdate(itemName); // Löschen mit itemName
     }
   };
 
-  // Zurück zur Übersicht der Einkaufslisten
+  // back to lists
   const handleBackToLists = () => {
     navigate("/ViewAllShoppingLists");
   };
@@ -103,69 +103,72 @@ const ItemsInList = () => {
   if (error) return <p>Fehler: {error}</p>;
 
   return (
-    <div style={{ padding: "20px" }}>
-      <h2>Artikel in der Liste</h2>
-      <ul style={{ listStyle: "none", padding: 0 }}>
-        {items.map((item) => (
-          <li
-            key={item.nameOfItem} // Verwende nameOfItem anstelle von item.id
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              marginBottom: "10px",
-              padding: "10px",
-              border: "1px solid #ccc",
-              borderRadius: "5px",
-            }}
-          >
-            <div>
-              <p>
-                <strong>Name:</strong> {item.nameOfItem}
-              </p>
-              <p>
-                <strong>Menge:</strong> {item.quantity}
-              </p>
-              <p>
-                <strong>Beschreibung:</strong> {item.description}
-              </p>
-            </div>
-            <input
-              type="checkbox"
-              checked={selectedItems.includes(item.nameOfItem)} // Verwende nameOfItem anstelle von item.id
-              onChange={() => handleSelectItem(item.nameOfItem)} // Verwende nameOfItem anstelle von item.id
-            />
-          </li>
-        ))}
-      </ul>
-      <button
-        onClick={handleDeleteSelected}
-        style={{
-          backgroundColor: "red",
-          color: "white",
-          padding: "10px",
-          borderRadius: "5px",
-          border: "none",
-          marginRight: "10px",
-          cursor: "pointer",
-        }}
-        disabled={selectedItems.length === 0}
-      >
-        Ausgewählte Artikel löschen
-      </button>
-      <button
-        onClick={handleBackToLists}
-        style={{
-          backgroundColor: "gray",
-          color: "white",
-          padding: "10px",
-          borderRadius: "5px",
-          border: "none",
-          cursor: "pointer",
-        }}
-      >
-        Zurück zu den Einkaufslisten
-      </button>
+    <div>
+      <Navigation />
+      <div style={{ padding: "20px" }}>
+        <h2>Artikel in der Liste</h2>
+        <ul style={{ listStyle: "none", padding: 0 }}>
+          {items.map((item) => (
+            <li
+              key={item.nameOfItem}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                marginBottom: "10px",
+                padding: "10px",
+                border: "1px solid #ccc",
+                borderRadius: "5px",
+              }}
+            >
+              <div>
+                <p>
+                  <strong>Name:</strong> {item.nameOfItem}
+                </p>
+                <p>
+                  <strong>Menge:</strong> {item.quantity}
+                </p>
+                <p>
+                  <strong>Beschreibung:</strong> {item.description}
+                </p>
+              </div>
+              <input
+                type="checkbox"
+                checked={selectedItems.includes(item.nameOfItem)} // use nameOfItem instead of item.id
+                onChange={() => handleSelectItem(item.nameOfItem)}
+              />
+            </li>
+          ))}
+        </ul>
+        <button
+          onClick={handleDeleteSelected}
+          style={{
+            backgroundColor: "red",
+            color: "white",
+            padding: "10px",
+            borderRadius: "5px",
+            border: "none",
+            marginRight: "10px",
+            cursor: "pointer",
+          }}
+          disabled={selectedItems.length === 0}
+        >
+          Ausgewählte Artikel löschen
+        </button>
+        <button
+          onClick={handleBackToLists}
+          style={{
+            backgroundColor: "gray",
+            color: "white",
+            padding: "10px",
+            borderRadius: "5px",
+            border: "none",
+            cursor: "pointer",
+          }}
+        >
+          Zurück zu den Einkaufslisten
+        </button>
+      </div>
     </div>
   );
 };

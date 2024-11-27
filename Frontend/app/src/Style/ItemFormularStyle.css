@@ -1,29 +1,27 @@
-/* Container, der die gesamte Seite abdeckt */
+
 .page-container {
     display: flex;
-    justify-content: center; /* Horizontale Zentrierung */
-    align-items: center; /* Vertikale Zentrierung */
-    min-height: 60%; /* Min. Höhe der Seite auf 100% der Viewport-Höhe */
+    justify-content: center;
+    align-items: center;
+    min-height: 60%;
     max-width: 100%;
-    background: url('../assets/shopping.jpg') no-repeat center center; /* Hintergrundbild */
-    background-size: contain; /* Bild deckt den gesamten Bereich ab */
-    padding: 120px; /* Etwas Abstand von den Rändern der Seite */
+    background: url('../assets/shopping.jpg') no-repeat center center;
+    background-size: contain;
+    padding: 120px;
 }
 
-/* Styling des Formular-Containers */
 .form-container {
-    background-color: white; /* Weißer Hintergrund mit leichtem Transparent-Effekt */
+    background-color: white;
     padding: 20px;
     border-radius: 10px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Schatten für einen 3D-Effekt */
+    box-shadow: 1px 4px 8px rgba(0, 0, 0, 0.1);
     width: 200%;
     margin-left: 120px;
     margin-right: 120px;
-    max-width: 500px; /* Maximale Breite des Formulars */
+    max-width: 500px;
     box-sizing: border-box;
 }
 
-/* Styling für Formular-Titel */
 h2 {
     text-align: center;
     font-family: 'Arial', sans-serif;
@@ -34,7 +32,6 @@ h2 {
     margin-bottom: 1px;
 }
 
-/* Styling für Formulareingaben */
 input[type="text"],
 input[type="number"],
 textarea {
@@ -48,17 +45,15 @@ textarea {
     background-color: #fff;
 }
 
-/* Styling für das Bild-URL Eingabefeld */
 input[type="text"][name="image"] {
     height: 40px;
     background-color: #f9f9f9;
 }
 
-/* Styling für den Absende-Button */
 button[type="submit"] {
     width: 100%;
     padding: 15px;
-    background-color: mediumseagreen; /* Grüner Hintergrund */
+    background-color: mediumseagreen;
     color: white;
     border: none;
     border-radius: 5px;
@@ -67,18 +62,15 @@ button[type="submit"] {
     transition: background-color 0.3s ease;
 }
 
-/* Hover-Effekt für den Absende-Button */
 button[type="submit"]:hover {
-    background-color: darkgreen; /* Etwas dunklerer Grünton */
+    background-color: darkgreen;
 }
 
-/* Styling für die Eingabefelder, wenn sie im Fokus sind */
 input:focus, textarea:focus {
     border-color: #4CAF50;
     outline: none;
 }
 
-/* Hinzufügen eines kleinen Abstands zwischen den Eingabefeldern */
 input[type="text"]:not(:last-child),
 input[type="number"]:not(:last-child),
 textarea:not(:last-child) {

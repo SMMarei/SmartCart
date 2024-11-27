@@ -1,7 +1,6 @@
-// services/itemService.ts
 import { DI } from "../index";
 import { Item } from "../entities/Item";
-import { ItemSchema } from "../Services/Validtator";
+import { ItemSchema } from "./Validtator";
 import { ShoppingList } from "../entities/ShoppingList";
 import { ShoppingListItem } from "../entities/ShoppingListItem";
 
@@ -38,9 +37,10 @@ export class ItemService {
     if (!item) throw new Error("Item not found");
 
     const itemShoppingList = await em.findOne(ShoppingListItem, { item: item });
-    // Überprüfen, ob der Artikel in einer Einkaufsliste verwendet wird
     if (itemShoppingList?.item.itemId === itemId) {
-      console.log(`Item ${itemId} is associated with a shopping list`);
+      console.log(
+        `Item with ID:  ${itemId}  and with name ${item.itemName} is associated with a shopping list`,
+      );
       {
         throw new Error(
           "Item cannot be deleted as it is associated with a shopping list",
@@ -51,16 +51,6 @@ export class ItemService {
     await em.removeAndFlush(item);
     console.log(`Item ${itemId} deleted`);
     return item;
-  }
-
-  async searchItemByName(itemName: string) {
-    const em = DI.orm.em.fork();
-    return em.find(Item, { itemName: { $like: `%${itemName}%` } });
-  }
-
-  async searchItemByDescription(description: string) {
-    const em = DI.orm.em.fork();
-    return em.find(Item, { itemDescription: { $like: `%${description}%` } });
   }
 
   async updateItemName(itemId: string, data: { itemId: string }) {
@@ -106,28 +96,21 @@ export class ItemService {
     itemShoppingList.shoppingList = shoppingList;
     itemShoppingList.quantity = itemQuantity;
 
-    // Setzen Sie `nameOfItem` basierend auf `item.itemName`
     itemShoppingList.nameOfItem = item.itemName;
     itemShoppingList.description = item.itemDescription;
 
-    // Fügen Sie das `ShoppingListItem` der Einkaufsliste hinzu und speichern Sie die Änderungen
     shoppingList.items.add(itemShoppingList);
     await em.flush();
     return itemShoppingList;
   }
 
-  // async getPopularItems() {
-  //   const em = DI.orm.em.fork();
-  //   const items = await em.find(Item, {}, { quantity: "desc" });
-  //   return items;
-  // }
   async getAllFavoriteItems() {
     const em = DI.orm.em.fork();
     try {
-      console.log("Fetching favorite items from database..."); // Debug-Ausgabe
+      console.log("Fetching favorite items from database..."); //   output for debugging
       return await em.find(Item, { isFavorite: true });
     } catch (error) {
-      console.error("Error fetching items from database:", error); // Debug-Ausgabe
+      console.error("Error fetching items from database:", error); //  error output for debugging
       throw error;
     }
   }

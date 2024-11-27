@@ -1,11 +1,8 @@
 import { ShoppingList } from "../entities/ShoppingList";
-import {
-  ShoppingListItemSchema,
-  ShoppingListSchema,
-} from "../Services/Validtator";
 import { DI } from "../index";
 import { ShoppingListItem } from "../entities/ShoppingListItem";
 import { Item } from "../entities/Item";
+import { ShoppingListItemSchema, ShoppingListSchema } from "./Validtator";
 
 export class ShoppingListService {
   async createShoppingList(data: {
@@ -15,6 +12,7 @@ export class ShoppingListService {
     const em = DI.orm.em.fork();
     const validatedData = ShoppingListSchema.parse(data);
 
+    // Check if a shopping list with the same name already exists
     const existingList = await em.findOne(ShoppingList, {
       listName: validatedData.listName,
     });
@@ -23,6 +21,7 @@ export class ShoppingListService {
         `Shopping list with name ${validatedData.listName} already exists`,
       );
     }
+
     const newList = new ShoppingList(
       validatedData.listName,
       validatedData.listDescription,
@@ -38,10 +37,13 @@ export class ShoppingListService {
     const em = DI.orm.em.fork();
     const validatedData = ShoppingListSchema.parse(data);
 
+    // Check if the shopping list exists
     const existingList = await em.findOne(ShoppingList, { id });
     if (!existingList) {
       throw new Error(`Shopping list with id ${id} not found`);
     }
+
+    // Update the shopping list's name and description
     existingList.listName = validatedData.listName;
     existingList.listDescription = validatedData.listDescription;
     await em.flush();
@@ -50,6 +52,7 @@ export class ShoppingListService {
 
   async deleteShoppingList(id: string) {
     const em = DI.orm.em.fork();
+
     const list = await em.findOne(
       ShoppingList,
       { id },
@@ -57,39 +60,43 @@ export class ShoppingListService {
     );
     if (!list) throw new Error("Shopping list not found");
 
-    // Überprüfen, ob die Liste Artikel enthält
+    // Check if the list contains items and prevent deletion if it does
     if (list.items.length > 0) {
       throw new Error(
         "Shopping list contains items. Please remove the items before deleting the list",
       );
     }
+
     await em.removeAndFlush(list);
     console.log(`Shopping list ${id} deleted`);
     return list;
   }
 
   async searchShoppingLists(query: string): Promise<ShoppingList[]> {
-    const em = DI.orm.em.fork(); // Neuer Entity Manager
+    const em = DI.orm.em.fork();
+
     return em.find(
       ShoppingList,
       {
         $or: [
-          { listName: { $like: `%${query}%` } }, // Suche nach Listenname
-          { listDescription: { $like: `%${query}%` } }, // Oder Suche nach Beschreibung
+          { listName: { $like: `%${query}%` } },
+          { listDescription: { $like: `%${query}%` } },
         ],
       },
-      { populate: ["items"] }, // Lade verbundene Items
+      { populate: ["items"] },
     );
   }
 
   async sortShoppingListsByLastUpdated() {
     const em = DI.orm.em.fork();
+
+    // Retrieve and sort shopping lists by their last updated timestamp
     return em.find(
       ShoppingList,
       {},
       {
-        populate: ["items", "items.item"], // Lade die Artikel und deren Details mit
-        orderBy: { listUpdatedAt: "desc" }, // Nach Aktualisierungsdatum sortieren
+        populate: ["items", "items.item"], // Load the items and their details
+        orderBy: { listUpdatedAt: "desc" }, // Sort by last updated date
       },
     );
   }
@@ -97,26 +104,23 @@ export class ShoppingListService {
   async findShoppingListsWithItem(itemName: string): Promise<ShoppingList[]> {
     const em = DI.orm.em.fork();
 
-    // Finde das Item anhand des Namens
     const item = await em.findOne(Item, { itemName });
     if (!item) {
       throw new Error(`Item with name "${itemName}" not found`);
     }
 
-    // Finde die ShoppingListItems, die dieses Item enthalten und lade die zugehörigen Einkaufslisten
+    // Find shopping list items that contain this item and load the related shopping lists
     const shoppingListItems = await em.find(
       ShoppingListItem,
-      { item }, // Filter nach dem gefundenen Item
-      { populate: ["shoppingList"] }, // Populiere die zugehörige Einkaufslisten
+      { item },
+      { populate: ["shoppingList"] },
     );
 
-    // Prüfen, ob Ergebnisse vorhanden sind
+    // Check if results are available
     if (!shoppingListItems || shoppingListItems.length === 0) {
-      console.log("Item not found in Shoppinglist"); // Gib ein leeres Array zurück, wenn keine Listen gefunden wurden
+      console.log("Item not found in Shoppinglist");
     }
 
-    // Extrahiere die Einkaufslisten aus den Listeneinträgen und filtere mögliche `undefined`-Werte
-    // Entferne `undefined`
     return shoppingListItems
       .map((listItem) => listItem.shoppingList)
       .filter((list): list is ShoppingList => !!list);
@@ -132,13 +136,11 @@ export class ShoppingListService {
   ) {
     const em = DI.orm.em.fork();
 
-    // Validiere die Eingabedaten
     const validatedData = ShoppingListItemSchema.omit({
       listName: true,
       item: true,
     }).parse(data);
 
-    // Suche die Einkaufsliste anhand des `listId`
     const list = await em.findOne(
       ShoppingList,
       { id: listId },
@@ -148,7 +150,6 @@ export class ShoppingListService {
       throw new Error("Shopping list not found");
     }
 
-    // Erstelle oder finde das Item anhand von `nameOfItem` und `description`
     const validatedItemData = {
       itemName: validatedData.nameOfItem,
       itemDescription: validatedData.description,
@@ -161,23 +162,22 @@ export class ShoppingListService {
         validatedItemData.itemDescription || "",
         "",
       );
-      await em.persistAndFlush(item); // Speichere das neue Item
+      await em.persistAndFlush(item);
     }
-
-    // Prüfe, ob das Item bereits in der Einkaufsliste existiert
+    // Check if the item already exists in the shopping list
     let existingItemInList = await em.findOne(ShoppingListItem, {
       shoppingList: list,
       item,
     });
 
     if (existingItemInList) {
-      // Wenn das Item bereits existiert, Menge erhöhen
+      // If the item exists, increase its quantity
       existingItemInList.quantity += validatedData.quantity || 1;
       await em.flush();
       return existingItemInList;
     }
 
-    // Neues Item zur Einkaufsliste hinzufügen
+    // Add a new item to the shopping list
     const listItem = new ShoppingListItem();
     listItem.shoppingList = list;
     listItem.item = item;
@@ -185,7 +185,7 @@ export class ShoppingListService {
     listItem.description = validatedData.description;
     listItem.quantity = validatedData.quantity || 1;
 
-    // Speichere den neuen Eintrag in der Liste
+    // Save the new list item
     await em.persistAndFlush(listItem);
 
     return listItem;
@@ -194,19 +194,16 @@ export class ShoppingListService {
   async deleteItemFromShoppingList(listId: string, itemName: string) {
     const em = DI.orm.em.fork();
 
-    // Suche nach dem Item anhand des Namens
     const item = await em.findOne(Item, { itemName });
     if (!item) {
       throw new Error(`Item with name "${itemName}" not found`);
     }
 
-    // Suche nach der Einkaufsliste anhand der ID
     const shoppingList = await em.findOne(ShoppingList, { id: listId });
     if (!shoppingList) {
       throw new Error(`Shopping list with id "${listId}" not found`);
     }
 
-    // Suche nach der Verbindung zwischen dem Item und der Einkaufsliste
     const listItem = await em.findOne(ShoppingListItem, { shoppingList, item });
     if (!listItem) {
       throw new Error(
@@ -214,10 +211,8 @@ export class ShoppingListService {
       );
     }
 
-    // Entferne das Item aus der Einkaufsliste
     await em.removeAndFlush(listItem);
 
-    // Rückgabe einer Bestätigung, dass das Item entfernt wurde
     return {
       message: `Item "${itemName}" has been removed from shopping list with id "${listId}"`,
     };
@@ -226,7 +221,7 @@ export class ShoppingListService {
   async getItemsFromShoppingList(listId: string) {
     const em = DI.orm.em.fork();
 
-    // Jetzt wird nach listId anstatt listName gesucht
+    // Now searching by listId instead of listName
     const list = await em.findOne(
       ShoppingList,
       { id: listId },

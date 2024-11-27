@@ -14,7 +14,6 @@ import { ShoppingListService } from "../Services/ShoppingListService";
 const router = Router({ mergeParams: true });
 const shoppingListService = new ShoppingListService();
 
-// Display all shopping lists, including linked items
 router.get("/AllShoppingList", async (req: Request, res: Response) => {
   try {
     const em = DI.orm.em.fork();
@@ -28,7 +27,6 @@ router.get("/AllShoppingList", async (req: Request, res: Response) => {
   }
 });
 
-// Create a new shopping list
 router.post("/NewShoppingList", async (req: Request, res: Response) => {
   try {
     const newList = await shoppingListService.createShoppingList(req.body); // 'await' hinzugefügt
@@ -47,7 +45,6 @@ router.post("/NewShoppingList", async (req: Request, res: Response) => {
   }
 });
 
-// Delete a shopping list
 router.delete("/:id", async (req: Request, res: Response) => {
   try {
     const shoppingList = await shoppingListService.deleteShoppingList(
@@ -90,7 +87,6 @@ router.get("/ShoppingList/search", async (req: Request, res: any) => {
   }
 });
 
-// Update a shopping list Name and Description
 router.put("/ShoppingList/:id", async (req: Request, res: any) => {
   try {
     const updatedList = await shoppingListService.updateNameShoppingList(
@@ -107,7 +103,6 @@ router.put("/ShoppingList/:id", async (req: Request, res: any) => {
   }
 });
 
-// Route für das Abrufen von Einkaufslisten mit einem bestimmten Item
 router.get(
   "/ShoppingListWithItem/:itemName",
   async (req: Request, res: any) => {
@@ -125,7 +120,7 @@ router.get(
 
       return res.status(200).json(shoppingLists);
     } catch (error) {
-      console.error("Error fetching shopping lists with item:", error);
+      console.error("Error fetching shopping lists with item:", error); // Debug-ouptut
       return handleError(
         res,
         error as Error,
@@ -135,7 +130,6 @@ router.get(
   },
 );
 
-// BackendRouter:
 router.post(
   "/NewItemToShoppingList/:id",
   async (req: Request, res: Response) => {
@@ -156,11 +150,10 @@ router.post(
   },
 );
 
-// Delete item from ShoppingList
 router.delete(
   "/ItemFromShoppingList/:listId/:itemName",
   async (req: Request, res: any) => {
-    const { listId, itemName } = req.params; // Lesen der Parameter aus der URL
+    const { listId, itemName } = req.params;
     console.log(listId, itemName);
 
     try {
@@ -179,11 +172,10 @@ router.delete(
   },
 );
 
-// Get Items from ShoppingList
 router.get("/ItemsFromShoppingList/:listId", async (req: Request, res: any) => {
   try {
     const items = await shoppingListService.getItemsFromShoppingList(
-      req.params.listId, // listId statt listName
+      req.params.listId,
     );
     return res.status(200).json(items);
   } catch (error) {
@@ -214,4 +206,23 @@ router.get("/LastUpdatedShoppingList", async (req: Request, res: any) => {
     }
   }
 });
+
+// FreeStyle #2:
+router.get("/api/:prodName", async (req, res) => {
+  try {
+    let requestProbe = req.params.prodName;
+    const response = await fetch(
+      `https://www.themealdb.com/api/json/v1/1/search.php?s=${requestProbe}`,
+    );
+    if (!response.ok) {
+      throw new Error("An error occurred while fetching the product data");
+    }
+    const data = await response.json();
+    res.json({ instructions: data.meals[0].strInstructions });
+  } catch (error) {
+    console.error("API-Error:", error);
+    res.status(500).json({ error: "An error occurred while loading data" });
+  }
+});
+
 export const ShoppingListController = router;

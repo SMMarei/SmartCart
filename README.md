@@ -15,26 +15,146 @@ Als Webserver wird Express genutzt. Die Daten sind in einer PostgreSQL Datenbank
 
 ## Features & Funktionalitäten
 
-- **Einkaufslisten hinzufügen**: Nutzer können neue Einkaufslisten mit einem Namen und einer Beschreibung hinzufügen.
+### Grundfunktionen:
+
+#### Einkaufslisten:
+
+- **Neue Einkaufslisten erstellen**: Nutzer können neue Einkaufslisten mit einem Namen und einer Beschreibung
+  hinzufügen.
 - **Einkaufslisten anzeigen**: Nutzer können aller hinzugefügten Einkaufslisten angezeigt bekommen.
-- **Einkaufslisten bearbeiten**: Nutzer können neue oder schon existierende Artikel zu Einkaufslisten hinzufügen,
-- auch die bestehenden Artikel von Einkaufslisten löschen.
-- **Einkaufslisten löschen**: Nutzer können Einkaufslisten nach ihrer Namen entfernen.
-- Einkaufslisten suchen: Nutzer können nach Einkaufslisten basierend auf ihrem Namen oder ihrer Beschreibung suchen.
-- **Artikel erstellen**: Nutzer können neue Einkäufe mit einem Namen, einer Beschreibung und einem Foto hinzufügen.
+- **Einkaufslisten bearbeiten**: Nutzer können schon die Namen oder/und Beschreibung der existierenden Einkaufslisten
+  bearbeiten.
+- **Einkaufslisten löschen**: Nutzer können Einkaufslisten entfernen.
+- **Einkaufslisten suchen**: Nutzer können nach Einkaufslisten basierend auf ihrem Namen oder ihrer Beschreibung suchen
+  ODER
+- Einkaufsliste anhand des Artikels suchen bzw. finden.
+- **Zur Einkaufsliste Artikel hinzufügen**: Nutzer können zu einer Einkaufsliste Artikel hinzufügen.
+- **Von der Einkaufsliste Artikel entfernen**: Nutzer können von einer Einkaufsliste Artikel entfernen.
+- **Einkaufslisten sortieren**: Nutzer bekommen Einkaufslisten nach dem letzten UpdatedDatum sortieret angezeigt.
+
+#### Artikel:
+
+- **Artikel erstellen**: Nutzer können neue Einkäufe mit einem Namen, einer Beschreibung und einem Foto (optional)
+  hinzufügen.
 - **Artikel anzeigen**: Nutzer können eine Liste aller hinzugefügten Einkäufe anzeigen.
-- **Artikel bearbeiten**: Nutzer können Name oder Beschreibung zu bestehenden Einkäufen bearbeiten.
+- **Artikel bearbeiten**: Nutzer können Name oder/und Beschreibung zu bestehenden Einkäufen bearbeiten.
 - **Artikel löschen**: Nutzer können Einkäufe entfernen.
 - **Artikel zu einer Einkaufsliste hinzufügen**: Nutzer können bestehende Einkäufe zu einer Einkaufsliste hinzufügen.
-- **Artikel von einer Einkaufsliste entfernen**: Nutzer können bereits vorhandene Einkäufe von einer Einkaufsliste
-  entfernen.
-- **Artikel suchen**: Nutzer können nach Einkäufen basierend auf ihrem Namen oder ihrer Beschreibung suchen.
+- **Artikel von einer Einkaufsliste entfernen**: Nutzer können Einkäufe von einer Einkaufsliste entfernen.
+- **Artikel als Favoriten markieren**: Nutzer können Einkäufe als Favoriten oder nicht Favoriten markieren.
 
 ### Spezielle Funktionen (Freestyle Tasks):
 
-- **Top-Einkäufe**: Beliebte Einkäufe, sortiert nach Menge.
+#### FreeStyle Task 1:
+
 - **Sortierung nach Aktualisierungsdatum**: Einkaufslisten können nach dem letzten Änderungsdatum sortiert werden.
 - **Favoriten-Status**: Einkäufe können als Favoriten markiert und gefiltert werden.
+- **Alle Favoriten anzeigen**: Alle favorisierten Einkäufe können auf einer Seite angezeigt werden.
+
+#### FreeStyle Task 2:
+
+- **Daten von externer API hinzufügen**: Nutzer können Anleitungen ( Instruction) von einem Artikel von einer
+  externen API (https://www.themealdb.com/api.php) bekommen.
+
+### Backendstruktur
+
+    .
+    ├── backend
+    │   ├── src
+    │   │   ├── controllers
+    │   │   │   ├── ItemController.ts
+    │   │   │   ├── ShoppingListController.ts
+    │   │   │   └── ...
+    │   │   ├── entities
+    │   │   │   ├── Item.ts
+    │   │   │   ├── ShoppingList.ts
+    │   │   │   └── ShoppingListItems.ts
+    │   │   ├── services
+    │   │   │   ├── ErrorHandler.ts
+    │   │   │   ├── ItemService.ts
+    │   │   │   ├── ShoppingListService.ts
+    │   │   │   └── Validator.ts
+    │   ├── .env
+    │   ├── package.json
+    │   └── tsconfig.json
+
+## Routenstruktur
+
+#### Backend:
+
+    **ItemController**:
+    GET /AllItems
+    POST /NewItem
+    DELETE /:itemId
+    PUT /:itemId
+    POST /:itemId
+    **Freestyle Task 1:**
+    PUT /Favorite/:itemId
+    GET /AllFavouriteItems
+
+    **ShoppingListController**:
+    GET /AllShoppingLists
+    POST /NewShoppingList
+    DELETE /:id
+    PUT /ShoppingList/:id
+    GET /ShoppingListWithItem/:itemName
+    POST /NewItemToShoppingList/:id
+    DELETE /ItemFromShoppingList/:listId/:itemName
+    GET /ShoppingList/search
+
+    **Freestyle Task 1:**
+    GET /LastUpdatedShoppingList
+    
+    **Freestyle Task 2:**
+    GET /api/:prodName
+
+## Aufgabe 2 Frontend: Einkaufslisten-App
+
+In der zweiten Hausaufgabe liegt der Fokus auf dem Frontend der App, das mit React und TypeScript entwickelt werden.
+Die App soll die Funktionalitäten des Backends nutzen und eine intuitive Benutzeroberfläche bieten.
+
+### Frontendstruktur
+
+    .
+    ├── app
+    │   ├── src
+    │   │   ├── components
+    │   │   │   ├── AddNewItem.tsx
+    │   │   │   ├── AddShoppingList.tsx
+    │   │   │   ├── AllFavourtieItems.tsx
+    │   │   │   └── FindShoppingList
+    |   |   |   |── HomeNavi
+    │   │   ├   ├── ItemsInList.tsx
+    │   │   │   ├── ItemsPage.tsx
+    │   │   │   └── ...
+    │   │   |── interfaces
+    │   │   │   ├── Item.ts
+    │   │   │   ├── ShoppingList.ts 
+    │   │   │   └── ...
+    │   │   ├── pages
+    │   │   │   ├── Items.tsx
+    │   │   │   ├── ShoppingLists.tsx
+    │   │   │   └── ...
+    │   │   ├── services
+    │   │   │   ├── ItemService.ts
+    │   │   │   ├── ShoppingListService.ts
+    │   │   │   └── ...
+    │   │   ├──Styles
+    │   │   │   ├── AllFavourtieItems.css
+    │   │   │   ├── Home.css
+    │   │   │   └── ItemFormularStyles.css
+    │   │   │   └── ItemPasgesStyles.css
+    │   │   │   └── ListFormularStyles.css
+    │   │   │   └── Navigation.css
+    │   │   │   └── Root.css
+    │   │   ├── App.css
+    │   │   ├── App.tsx
+    │   │   ├── index.tsx
+    │   │   └── ...
+    │   ├── .eslintrc.js
+    │   ├── .prettierrc
+    │   ├── package.json
+    │   └── tsconfig.json
 
 ## Technologien
 
@@ -43,84 +163,6 @@ Als Webserver wird Express genutzt. Die Daten sind in einer PostgreSQL Datenbank
 - **Datenbank**: PostgreSQL
 - **Linting**: ESLint
 - **Code-Formatierung**: Prettier
-
-## Projektstruktur
-
-    .
-    ├── backend
-    │   ├── src
-    │   │   ├── entities
-    │   │   │   ├── Item.ts
-    │   │   │   └── ShoppingList.ts
-    │   │   ├── repositories
-    │   │   │   ├── ItemRepository.ts
-    │   │   │   └── ShoppingListRepository.ts
-    │   │   ├── routes
-    │   │   │   ├── items.ts
-    │   │   │   └── shoppingLists.ts
-    │   │   ├── app.ts
-    │   │   └── index.ts
-    │   ├── .env
-    │   ├── .eslintrc.js
-    │   ├── .prettierrc
-    │   ├── ormconfig.js
-    │   ├── package.json
-    │   └── tsconfig.json
-    ├── frontend
-    │   ├── public
-    │   │   ├── index.html
-    │   │   └── ...
-    │   ├── src
-    │   │   ├── components
-    │   │   │   ├── Item.tsx
-    │   │   │   ├── ItemList.tsx
-    │   │   │   ├── ShoppingList.tsx
-    │   │   │   └── ShoppingListList.tsx
-    │   │       ├── services
-    │   │       │   ├── itemService.ts
-    │   │       │   └── shoppingListService.ts
-    │   │   
-    │   │   ├── pages
-    │   │   │   ├── Items.tsx
-    │   │   │   ├── ShoppingLists.tsx
-    │   │   │   └── ...
-    │   │   ├── App.tsx
-    │   │   ├── index.tsx
-    │   │   └── ...
-    │   ├── .eslintrc.js
-    │   ├── .prettierrc
-    │   ├── package.json
-    │   └── tsconfig.json
-    ├── .gitignore
-    ├── README.md
-    └── ...
-
-## Routenstruktur
-
-    Backend:
-    - `GET /ShoppingLists/AllShoppingLists`: Ruft eine Liste aller Einkaufslisten ab.
-    - `POST /ShoppingLists/NewShoppingList`: Erstellt eine neue Einkaufsliste.
-    - `DELETE /ShoppingLists/:listName`    : Löscht eine bestimmte Einkaufsliste.
-    - `POST /ShoppingLists/ItemToShoppingList/:listName`: Fügt einen Artikel zu einer bestimmten Einkaufsliste hinzu.
-    - 'Delete /ShoppingLists/ItemFromShoppingList/:listName/:itemName': Entfernt einen Artikel von einer bestimmten Einkaufsliste.
-    - `PUT /ShoppingLists/DeleteItemFromShoppingList/:listName/:itemName`: Entfernt einen Artikel von einer bestimmten Einkaufsliste.
-    - `GET /ShoppingLists/ShoppingListByName/:listName`: Ruft eine Einkaufsliste anhand ihres Namens ab.
-    - `GET /ShoppingLists/ShoppingListByDescription/:listDescription`: Ruft Einkaufsliste anhand ihrer Beschreibung ab.
-    - `PUT /ShoppingLists/ShoppingList/:listName`: Aktualisiert den Namen einer bestimmten Einkaufsliste.
-    - `GET /ShoppingLists/ShoppingListWithItem/:itemName`: Ruft Einkaufsliste  mit bestimmten Artikel ab.   
-    - `GET /ShoppingLists/LastUpdatedShoppingList`: Freestyle Task 1. Sortiert Einkaufsliste nach dem letzten Änderungsdatum.
-   
-    - `GET /items/PopularItems`: Freestyle Task 1. Ruft eine Liste der häufig gekauften anhad ihrer Menge ab.
-    - `GET /items/AllFavoriteItems`: Freestyle Task 1. Ruft eine Liste der favorisierten Artikeln ab.
-    - `GET /items/:itemName`: Sucht nach Artikeln basierend auf ihrem Namen.
-    - `GET /items/ItemByDescription/:itemDescription`: Sucht nach Artikeln basierend auf ihrer Beschreibung.
-    - `PUT /items/Favorite/:itemName`: Markiert einen Artikel als Favorit oder Wenn einen Favoiten Artikel als nicht Favorite .
-    - 'PUT /items/:itemName': Aktualisiert einen bestimmten Artikel.
-    - 'POST /items/NewItem': Erstellt einen neuen Artikel.
-    - 'GET /items/AllItems': Ruft eine Liste aller Artikel ab.
-    - `DELETE /items/:itemName`: Löscht einen bestimmten Artikel.
-
-## Aufsetzen der Applikation
 
 ### Voraussetzungen
 
@@ -137,6 +179,8 @@ Als Webserver wird Express genutzt. Die Daten sind in einer PostgreSQL Datenbank
 - React (optional)
 - TypeScript (optional)
 - Express (optional)
+
+## Applikation starten
 
 ### Backend
 
@@ -155,6 +199,12 @@ Als Webserver wird Express genutzt. Die Daten sind in einer PostgreSQL Datenbank
     3. Installieren Sie die notwendigen Abhängigkeiten: `npm install`
     4. Starten Sie die Anwendung: `npm run dev`
 
-#
+**Hinweis**:
+
+- Der Backend-Code wurde standardmäßig auf Englisch verfasst.
+- Der Frontend-Code ist ebenfalls auf Englisch geschrieben.
+- Die Rückmeldungen und Fehlermeldungen hingegen sind auf Deutsch, da die App für deutschsprachige Nutzer entwickelt
+  wurde und Fehlermeldungen für die Zielgruppe in ihrer Sprache verständlicher sein sollten.
+
 
     
